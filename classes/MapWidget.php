@@ -31,6 +31,7 @@ class MapWidget extends WP_Widget
 
     function register() {
         parent::__construct( $this->widget_ID, $this->widget_name, $this->widget_options, $this->control_options );
+        wp_enqueue_script('jquery');
         add_action('widgets_init', array( $this, 'widgetInit' ) );
     }
 
@@ -45,18 +46,27 @@ class MapWidget extends WP_Widget
             <!doctype html>
             <html lang="en">
             <head>
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/css/ol.css" type="text/css">
+                <link rel="stylesheet" href="<?= plugins_url() . '/WP-map-store-locator/includes/lib/ol-6.1.1/css/ol.css'?>">
+                <link rel="stylesheet" href="<?= plugins_url() . '/WP-map-store-locator/includes/lib/bootstrap-4/css/bootstrap.min.css'?>">
                 <style>
-                .map {
-                    height: 400px;
-                    width: 100%;
+                .ol-attribution.ol-uncollapsible {
+                    display: none !important;
                 }
+
                 </style>
-                <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/build/ol.js"></script>
                 <title>OpenLayers example</title>
             </head>
             <body>
-                <div id="map" class="map"></div>
+                <div class="container">
+                    <div class="row">                
+                        <div id="map" class="col-sm-12 col-md-8 col-lg-6 p-0" style="height: 12em;"></div>
+                    </div>
+                </div>
+                
+                <script src="<?= plugins_url() . '/WP-map-store-locator/includes/lib/ol-6.1.1/js/ol.js'?>"></script>
+                <scrip src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.js"></scrip>
+                <script src="<?= plugins_url() . '/WP-map-store-locator/includes/lib/popper/popper.min.js'?>"></script>
+                <script src="<?= plugins_url() . '/WP-map-store-locator/includes/lib/bootstrap-4/js/bootstrap.min.js'?>"></script>                
                 <script type="text/javascript">
                     // values from php wordpress
                     
