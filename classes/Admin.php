@@ -32,15 +32,6 @@ class Admin
             110
         );
     }
-
-    function setOptions() {
-
-    }
-
-    function saveOptions() {
-
-    }
-
     /**
      * Front page
      */
@@ -95,9 +86,18 @@ class Admin
         // set overlay title
         add_settings_field("overlay_title", "Title", array($this,"def_overlay_title"), "msl_plugin", "overlay_section");
         register_setting("msl_settings", "overlay_title");
-        // set overlay picture
-        add_settings_field("overlay_picture", "Picture", array($this,"def_overlay_pict"), "msl_plugin", "overlay_section");
-        register_setting("msl_settings", "overlay_picture");
+        // set overlay text
+        add_settings_field("overlay_text", "Text", array($this,"def_overlay_text"), "msl_plugin", "overlay_section");
+        register_setting("msl_settings", "overlay_text");
+        // overlay marker
+        add_settings_field("overlay_marker", "Marker Icon", array($this,"def_overlay_marker"), "msl_plugin", "overlay_section");
+        register_setting("msl_settings", "overlay_marker");
+        // overlay marker size
+        add_settings_field("overlay_marker_size", "Marker size", array($this,"def_overlay_size"), "msl_plugin", "overlay_section");
+        register_setting("msl_settings", "overlay_size");                
+        // overlay html content
+        add_settings_field("overlay_html", "HTML Content", array($this,"def_overlay_html"), "msl_plugin", "overlay_section");
+        register_setting("msl_settings", "overlay_html");
     }
 
     function def_section_view() {
@@ -127,12 +127,30 @@ class Admin
     }
     function def_overlay_coordinates(){
         ?>
-            <input type="number" name="overlay_coordinates" id="overlay_coordinates" value="<?php echo get_option('overlay_coordinates'); ?>" />
+            <input type="text" name="overlay_coordinates" id="overlay_coordinates" value="<?php echo get_option('overlay_coordinates'); ?>" />
         <?php
     }
-    function def_overlay_pict() {
+    function def_overlay_text() {
         ?>
-            <input type="text" name="overlay_picture" id="overlay_picture" value="<?php echo get_option('overlay_picture'); ?>" />
+            <input type="text" name="overlay_text" id="overlay_text" value="<?php echo get_option('overlay_text'); ?>" />
+        <?php
+    }
+
+    function def_overlay_marker() {
+        ?>
+            <input type="text" name="overlay_marker" id="overlay_marker" value="<?php echo get_option('overlay_marker'); ?>" />
+        <?php
+    }
+
+    function def_overlay_size() {
+        ?>
+            <input type="text" name="overlay_marker_size" id="overlay_marker_size" value="<?php echo get_option('overlay_marker_size'); ?>" />
+        <?php
+    }
+
+    function def_overlay_html() {
+        ?>
+            <input type="text" name="overlay_html" id="overlay_html" value="<?php echo get_option('overlay_html'); ?>" />
         <?php
     }
 }

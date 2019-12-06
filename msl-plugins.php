@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: msl
+Plugin Name: Map Store Location
 
 Description: simple map plugin
 Version: 1.0.0
