@@ -2,10 +2,11 @@
 /*
 Plugin Name: Map Store Location
 
-Description: simple map plugin
+Description: A plugin to display geographic data in a map.
 Version: 1.0.0
 Author: JDev
 License: GPLv3 or later
+Domain Path: /languages
 */
 include('classes/MslPlugin.php');
 

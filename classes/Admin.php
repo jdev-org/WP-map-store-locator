@@ -84,7 +84,8 @@ class Admin
         add_settings_field("overlay_coordinates", "Location", array($this,"def_overlay_coordinates"), "msl_plugin", "overlay_section");
         register_setting("msl_settings", "overlay_coordinates");
         // set overlay title
-        add_settings_field("overlay_title", "Title", array($this,"def_overlay_title"), "msl_plugin", "overlay_section");
+        add_settings_field("overlay_title", __( 'Title', 'msl-plugin' )
+            , array($this,"def_overlay_title"), "msl_plugin", "overlay_section");
         register_setting("msl_settings", "overlay_title");
         // set overlay text
         add_settings_field("overlay_text", "Text", array($this,"def_overlay_text"), "msl_plugin", "overlay_section");
