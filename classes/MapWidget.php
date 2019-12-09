@@ -103,15 +103,7 @@ class MapWidget extends WP_Widget
                     geometry: new ol.geom.Point(mapDefaultCenter),
                 });
 
-                var iconStyle = new ol.style.Style({
-                    image: new ol.style.Icon({
-                        anchor: [0.3, 40],
-                        anchorXUnits: 'fraction',
-                        anchorYUnits: 'pixels',
-                        src: overlayMarker
-                    })
-                });
-                iconFeature.setStyle(iconStyle);
+
                 // popup creation                  
                 let overlay = new ol.Overlay({
                     element: document.getElementById('popup'),
@@ -127,12 +119,35 @@ class MapWidget extends WP_Widget
                             source: new ol.source.OSM()
                         })
                     ],
-                    overlays: [overlay],
+                    //overlays: [overlay],
                     view: new ol.View({
                         center: mapDefaultCenter,
                         zoom: mapDefaultZoom
                     })
                 });
+                // set properties
+                if (overlayMarker) { // avoid empty style and no ol.style.icon assertion error
+                    var iconStyle = new ol.style.Style({
+                        image: new ol.style.Icon({
+                            anchor: [0.3, 40],
+                            anchorXUnits: 'fraction',
+                            anchorYUnits: 'pixels',
+                            src: overlayMarker
+                        })
+                    });
+                
+                    iconFeature.setStyle(iconStyle);
+                    // create and add layers
+                    let layer = new ol.layer.Vector({
+                        source: new ol.source.Vector({
+                            features: [
+                                iconFeature
+                            ]
+                        })
+                    });
+                    map.addLayer(layer);                    
+                    map.setProperties({'overlays': [overlay]});
+                }
                 // popup behavior
                 let content = document.getElementById('popup-content');
                 function hidePopup(){
@@ -153,16 +168,6 @@ class MapWidget extends WP_Widget
                         </div>`;
                     }
                 }
-
-                // create and add layers
-                let layer = new ol.layer.Vector({
-                    source: new ol.source.Vector({
-                        features: [
-                            iconFeature
-                        ]
-                    })
-                });
-                map.addLayer(layer);
                 // feature slect behavior - only one in the map
                 map.on('click', function(evt) {
                     let features = [];
