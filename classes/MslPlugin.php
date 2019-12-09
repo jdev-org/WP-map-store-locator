@@ -35,8 +35,6 @@ class MslPlugin
 
     function activateWidgets() {
         // footer widget
-        /*$footer_map_widget = new FootMapWidget();
-        $footer_map_widget->register();*/
         $page_map_widget = new FootMapWidget(
             'Footer map widget',
             'Footer map locator',
