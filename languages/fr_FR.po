@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Map Store Location\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-06 17:04+0000\n"
-"PO-Revision-Date: 2019-12-06 17:22+0000\n"
+"PO-Revision-Date: 2019-12-06 17:30+0000\n"
 "Last-Translator: jdev <gaetan.bruel@jdev.fr>\n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
@@ -24,7 +24,7 @@ msgstr "Un plugin pour afficher vos données géographique sur votre une carte."
 
 #. Author of the plugin
 msgid "JDev"
-msgstr ""
+msgstr "JDev"
 
 msgid "Coordinates"
 msgstr "Coordonnées"
