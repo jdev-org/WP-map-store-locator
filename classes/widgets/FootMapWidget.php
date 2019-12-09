@@ -1,56 +1,15 @@
 <?php
-/*
-Plugin Name: Map store locator
-Description: Allow to insert a simple OpenLayers map into a wp page.
-Author: JDev
-Version: 0.1
-*/
 
-class MapWidget extends WP_Widget
+require_once('BaseWidgets.php');
+
+class FootMapWidget extends BaseWidgets 
 {
-    public $options;
-
-    public $widget_ID;
-
-	public $widget_name;
-
-	public $widget_options = array();
-
-	public $control_options = array();
-
-    function __construct() {
-        $this->widget_ID = 'msl_map_widget';
-        $this->widget_name = 'Map Store Locator Map widget';
-        $this->widget_options = array(
-            'classname' => $this->widget_ID,
-            'description' => $this->widget_name,
-            'customize_selective_refresh' => true
-        );
-        $this->controls_options = array( 'width' => 800, 'height' => 500 );
-    }
-
-    function register() {
-        parent::__construct( $this->widget_ID, $this->widget_name, $this->widget_options, $this->control_options );        
-        add_action('widgets_init', array( $this, 'widgetInit' ) );
-        
-        add_shortcode('map', array($this,'getMap'));       
-    }
-
-    function widgetInit() {
-        register_widget( $this );
-        wp_enqueue_script( 'jquery' );
-    }
-
-    function widget( $args, $instance ) {
-        $this->instance = $instance;
-        echo $args['before_widget'];
-        $this->getMap();
-        echo $args['after_widget'];
-    }
-
-    function getMap() {
-        // generate random id
-        $randomId = uniqid();
+    /**
+     * @override
+     */
+    function htmlComponent() {
+        $this->setId();
+        $idEl=$this->getId();
         ?>
         <!doctype html>
         <html lang="en">
@@ -68,30 +27,31 @@ class MapWidget extends WP_Widget
         <body>
             <div class="container">
                 <div class="row">                
-                    <!--div-- id="<?= json_encode($randomId);?>" class="col-sm-12 p-0" style="height: 12em;"></!--div-->
                     <div id="map" class="col-sm-12 p-0" style="height: 12em;"></div>
                 </div>
             </div>
             <div id="popup" class="ol-popup">
                 <div id="popup-content"></div>
             </div>
-            
-            
             <script src="<?= plugins_url() . '/WP-map-store-locator/includes/lib/ol-6.1.1/js/ol.js'?>"></script>
             <script src="<?= plugins_url() . '/WP-map-store-locator/includes/lib/popper/popper.min.js'?>"></script>
             <script src="<?= plugins_url() . '/WP-map-store-locator/includes/lib/bootstrap-4/js/bootstrap.min.js'?>"></script>                
             <script type="text/javascript">
-
-                // create random id
-                let id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
                 // values from php wordpressgit stat
+                let mapDefaultSearchZoom = 7;
                 let mapDefaultCenter = <?= json_encode(get_option('default_coordinates'));?> ||'-385579.42,6244601.85';
                 let mapDefaultZoom = <?= json_encode(get_option('default_zoom'));?> || 7;
                 let overlayText = <?= json_encode(get_option('overlay_text'));?> || '';
                 let overlayMarker = <?= json_encode(get_option('overlay_marker'));?> || '';
                 let overlayTitle = <?= json_encode(get_option('overlay_title'));?> || '';
                 let overlayHtmlContent = <?= json_encode(get_option('overlay_html'));?> || '';
-                let mapDefaultSearchZoom = 7;
+                let dataUrl = <?= json_encode(get_option('data_file_url'));?> || '';
+                const ID = <?= json_encode($this->getId());?> || <?= json_encode(uniqid());?>;
+                // change all ids
+                let mapId = 'map-' + ID;
+                let overlayId = 'popup-' + ID;
+                document.getElementById('map').id = mapId;
+                document.getElementById('popup').id = overlayId;                
                 // set default center view
                 let splitCenter = mapDefaultCenter.split(',');
                 let x = parseFloat(splitCenter[0]);
@@ -102,24 +62,20 @@ class MapWidget extends WP_Widget
                 var iconFeature = new ol.Feature({
                     geometry: new ol.geom.Point(mapDefaultCenter),
                 });
-
-
                 // popup creation                  
                 let overlay = new ol.Overlay({
-                    element: document.getElementById('popup'),
+                    element: document.getElementById(overlayId),
                     autoPan: false,
                     offset: [0, -50]
                 });
-                // map creation
-                document.getElementById("map").id = id;
                 map = new ol.Map({
-                    target: id,
+                    target: mapId,
                     layers: [
                         new ol.layer.Tile({
                             source: new ol.source.OSM()
                         })
                     ],
-                    //overlays: [overlay],
+                    overlays: overlayMarker ? [overlay] : [],
                     view: new ol.View({
                         center: mapDefaultCenter,
                         zoom: mapDefaultZoom
@@ -145,8 +101,7 @@ class MapWidget extends WP_Widget
                             ]
                         })
                     });
-                    map.addLayer(layer);                    
-                    map.setProperties({'overlays': [overlay]});
+                    map.addLayer(layer);
                 }
                 // popup behavior
                 let content = document.getElementById('popup-content');
@@ -181,25 +136,26 @@ class MapWidget extends WP_Widget
                         hidePopup();
                     }
                 });
+
+                // treat data;
+                function treatData (jsonData) {
+                    console.log(jsonData);
+                }
+                // get fata from json file request
+                let data;
+                if (dataUrl) {
+                    let ajaxReq = new XMLHttpRequest();
+                    ajaxReq.onload = function() {
+                        if (this.readyState == 4 && this.status == 200) {                            
+                            data = this.responseText ? JSON.parse(this.responseText) : null;
+                        }
+                    }
+                    ajaxReq.open("POST", "distillerieDuVercors:v€rcORs26190@" + dataUrl);
+                    //ajaxReq.send(null);
+                }
             </script>
         </body>
         </html>     
         <?php
-        
-    }
-
-
-    /**Contains widgets options html**/
-    public function form($instance) {
-
-        ?>
-        <!-- form html -->
-        <?php
-    }    
-
-    /**Catch update values to compare and insert action on modification**/
-    public function update( $new_instance, $old_instance) {
-        $instance = $old_instance;        
-        return $instance;
     }
 }

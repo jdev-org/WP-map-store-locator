@@ -1,9 +1,14 @@
 <?php
-require('Admin.php');
-require('MapWidget.php');
+require('admin/Admin.php');
+
+require('widgets/FootMapWidget.php');
+require('widgets/PageMapWidget.php');
+
+//require('widgets/FooterMapWidget.php');
 
 class MslPlugin
 {
+    
     public $plugin;
     
     function __construct() {
@@ -28,12 +33,24 @@ class MslPlugin
 		flush_rewrite_rules();
     }
 
-    function init() {
-
-    }
-
     function activateWidgets() {
-        $map_widget = new MapWidget();
-        $map_widget->register();
+        // footer widget
+        /*$footer_map_widget = new FootMapWidget();
+        $footer_map_widget->register();*/
+        $page_map_widget = new FootMapWidget(
+            'Footer map widget',
+            'Footer map locator',
+            null,
+            true,           
+        );
+        $page_map_widget->register();
+        // page widget
+        $page_map_widget = new PageMapWidget(
+            'Map page widget',
+            'Map page locator',
+            null,
+            true,           
+        );
+        $page_map_widget->register();
     }
 }

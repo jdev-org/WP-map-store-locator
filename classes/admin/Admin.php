@@ -13,8 +13,9 @@ class Admin
      */
 	public function register() {       
         add_action("admin_menu", array( $this, 'add_new_menu_items' ));
-        add_action("admin_init", array( $this, 'default_view_section' ));
-        add_action("admin_init", array( $this, 'default_overlay_section' ));
+        add_action("admin_init", array( $this, 'view_section' ));
+        add_action("admin_init", array( $this, 'overlay_section' ));
+        add_action("admin_init", array( $this, 'data_section' ));
     }
 
     /**
@@ -43,16 +44,12 @@ class Admin
                 <?php settings_errors(); ?>
                 <form method="post" action="options.php">
                     <?php
-                
-                        //add_settings_section callback is displayed here. For every new section we need to call settings_fields.
+                        //add_settings_section callback is displayed here. For every new section we need to call settings_fields.                        
                         settings_fields("msl_settings");
-                    
                         // all the add_settings_field callbacks is displayed here
                         do_settings_sections("msl_plugin");
-                
                         // Add the submit button to serialize the options
                         submit_button('Save');
-                    
                     ?>         
                 </form>
             </div>
@@ -61,9 +58,10 @@ class Admin
 
     
     /**
+     * View section
      * View is link to map and define default map view options
      */
-    function default_view_section() {
+    function view_section() {
         // create section
         add_settings_section("default_view_section", "Map option", array($this,"def_section_view"), "msl_plugin");
         // set center field
@@ -74,18 +72,39 @@ class Admin
         register_setting("msl_settings", "default_zoom");
     }
 
+    // section description text
+    function def_section_view() {
+        ?>
+            <div style="border-bottom: 1px solid black;">
+                Default map view options.
+            </div>
+        <?php
+    }
+
+    function def_field_coordinates() {
+        ?>
+            <input type="text" name="default_coordinates" id="default_coordinates" value="<?php echo get_option('default_coordinates'); ?>" />
+        <?php
+    }
+
+    function def_field_zoom() {
+        ?>
+            <input type="number" name="default_zoom" id="default_zoom" value="<?php echo get_option('default_zoom'); ?>" />
+        <?php
+    }
+
     /**
-     * Overlay contain owner main store, warehouse or headquarter description
+     * Overlay section
+     * contain owner main store, warehouse or headquarter description
      */
-    function default_overlay_section() {
+    function overlay_section() {
         // create section
         add_settings_section("overlay_section", "Popup options", array($this,"def_section_overlay"), "msl_plugin");
         // set overlay location coordinates
         add_settings_field("overlay_coordinates", "Location", array($this,"def_overlay_coordinates"), "msl_plugin", "overlay_section");
         register_setting("msl_settings", "overlay_coordinates");
         // set overlay title
-        add_settings_field("overlay_title", __( 'Title', 'msl-plugin' )
-            , array($this,"def_overlay_title"), "msl_plugin", "overlay_section");
+        add_settings_field("overlay_title", __( 'Title', 'msl-plugin' ), array($this,"def_overlay_title"), "msl_plugin", "overlay_section");
         register_setting("msl_settings", "overlay_title");
         // set overlay text
         add_settings_field("overlay_text", "Text", array($this,"def_overlay_text"), "msl_plugin", "overlay_section");
@@ -101,24 +120,13 @@ class Admin
         register_setting("msl_settings", "overlay_html");
     }
 
-    function def_section_view() {
-        echo "Default map view options.";
-    }
-
-    function def_field_coordinates() {
-        ?>
-            <input type="text" name="default_coordinates" id="default_coordinates" value="<?php echo get_option('default_coordinates'); ?>" />
-        <?php
-    }
-
-    function def_field_zoom() {
-        ?>
-            <input type="number" name="default_zoom" id="default_zoom" value="<?php echo get_option('default_zoom'); ?>" />
-        <?php
-    }
-
+    // section description text
     function def_section_overlay() {
-        echo "Default popup options.";
+        ?>
+            <div style="border-bottom: 1px solid black;">
+                Default popup options.
+            </div>
+        <?php
     }
 
     function def_overlay_title(){
@@ -154,4 +162,31 @@ class Admin
             <input type="text" name="overlay_html" id="overlay_html" value="<?php echo get_option('overlay_html'); ?>" />
         <?php
     }
+
+    /**
+     * Data section
+     * Contain all params to display data to map
+     */
+    function data_section () {
+        add_settings_section("data_section", "Data options", array($this,"section_data_title"), "msl_plugin");
+        // data file url input
+        add_settings_field("data_file_url", __( 'URL', 'msl-plugin' ), array($this,"data_file_url"), "msl_plugin", "data_section");
+        register_setting("msl_settings", "data_file_url");
+    }
+
+    // section description text
+    function section_data_title() {
+        ?>
+            <div style="border-bottom: 1px solid black;">
+                Default popup options.
+            </div>
+        <?php
+    }
+
+    function data_file_url() {
+        ?>
+            <input type="text" name="data_file_url" id="data_file_url" value="<?php echo get_option('data_file_url'); ?>" />
+        <?php
+    }
+
 }
