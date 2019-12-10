@@ -61,7 +61,7 @@ class BaseWidgets extends WP_Widget
      */
     function widget( $args, $instance) {
         echo $args['before_widget'];
-        $this->htmlComponent();
+        $this->htmlComponent($instance);
         echo $args['after_widget'];
     }
 
@@ -96,7 +96,7 @@ class BaseWidgets extends WP_Widget
      * HTML COMPONENT
      * Return by widget() function.
      */
-    function htmlComponent() {
+    function htmlComponent($instance) {
         ?>
             <div>Basic Widget!</div>
         <?php
