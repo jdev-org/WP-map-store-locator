@@ -2,6 +2,8 @@
 require_once('admin/Admin.php');
 
 require_once('widgets/MapWidget.php');
+require_once('widgets/BaseWidgets.php');
+require_once('widgets/Msl.php');
 
 class MslPlugin
 {
@@ -32,32 +34,7 @@ class MslPlugin
     }
 
     function activateWidgets() {
-        // create maion map widget
-        $map_widget = new MapWidget(
-            'Map widget',
-            'Map',
-            null,
-            true,
-        );
-        $map_widget->register();
-
-        // footer widget
-        /*$foot_map_widget = new FootMapWidget(
-            'Footer map widget',
-            'Footer map locator',
-            null,
-            true,           
-        );
-        $foot_map_widget->register();*/
-        
-        // page widget
-
-        /*$page_map_widget = new PageMapWidget(
-            'Map page widget',
-            'Map page locator',
-            null,
-            true,           
-        );
-        $page_map_widget->register();*/
+        $msl_widget = new MslWidget();
+        $msl_widget->register();
     }
 }

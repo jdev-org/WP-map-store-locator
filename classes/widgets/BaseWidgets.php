@@ -1,18 +1,7 @@
 <?php
 class BaseWidgets extends WP_Widget
 {
-    public $options;
-
-    public $widget_ID;
-
-    public $id;
-
-	public $widget_name;
-
-	public $widget_options = array();
-
-    public $control_options = array();
-    
+   
     public $shortCodeId;
 
     public $registerWidget = false;
@@ -20,30 +9,23 @@ class BaseWidgets extends WP_Widget
     /**
      * CONSTRUCTOR
      */
-    function __construct($id, $name, $options, $isRegister) {
-        $this->registerWidget = $isRegister;
-        $this->widget_ID = $id;
-        $this->widget_name = $name;
-        $this->widget_options = array(
-            'classname' => $this->widget_ID,
-            'description' => $this->widget_name,
-            'customize_selective_refresh' => true
+    function __construct($id, $name, $description, $textdomain) {
+        parent::__construct(
+            $id,
+            esc_html__( $name,  $textdomain ),
+            array( 'description' => esc_html__( $description,  $textdomain ))
         );
-        if ($options) {
-            $this->controls_options = $options;
-        }
-    }
+    } 
 
     /**
      * REGISTER
      * Register widget into wordpress system.
      */
     function register() {
-        parent::__construct( $this->widget_ID, $this->widget_name, $this->widget_options, $this->control_options );        
-        if($this->registerWidget) {
+        /*if($this->registerWidget) {
             add_action('widgets_init', array( $this, 'widgetInit' ) );
-        }
-        $this->setId(null);
+        }*/
+        add_action('widgets_init', array( $this, 'widgetInit' ) );
     }
 
     /**
@@ -61,6 +43,8 @@ class BaseWidgets extends WP_Widget
      */
     function widget( $args, $instance) {
         echo $args['before_widget'];
+        print_r($instance);
+        $mapCenterXY = $instance['mapCenterXY'];
         $this->htmlComponent($instance);
         echo $args['after_widget'];
     }
@@ -105,17 +89,43 @@ class BaseWidgets extends WP_Widget
     /**
      * WIDGET ADMIN FORM 
     */
-    public function form($instance) {
+    /*public function form( $instance ) {
+        if ( isset( $instance[ 'title' ] ) ) {
+             $title = $instance[ 'title' ];
+        } else {
+            $title = "Titre";
+        }
+        ?>
+            <p>
+                <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:' ); ?></label>
+                <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
+            </p>
+        <?php
+    }
+    public function update( $new_instance, $old_instance ) {
+
+        $instance = array();
+        $instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
         return $instance;
+    }*/
+
+    function form($instance) {
+        if ( isset( $instance[ 'title' ] ) ) {
+            $mapCenterXY = $instance[ 'title' ];
+        } else {
+            $mapCenterXY = "1,1";
+        }
+        ?>      
+            <p>
+                <label for="<?php esc_attr( $this->get_field_id( 'title' ) ); ?>">Center: </label>
+                <input class="widefat" type="text" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" id="<?php esc_attr( $this->get_field_id( 'title' ) ); ?>" value="<?php esc_attr( $mapCenterXY ); ?>" />
+            </p>            
+        <?php
     }
 
-    /**
-     * UPDATE
-     * Usefull to compare or realize action on instance update.
-     * Trigger on widget form modifications.
-    */
-    public function update( $new_instance, $old_instance) {
-        $instance = $old_instance;        
+    public function update( $new_instance, $old_instance ) {
+        $instance = array();
+        $instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
         return $instance;
     }
 }

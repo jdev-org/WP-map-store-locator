@@ -2,23 +2,38 @@
 
 require_once('BaseWidgets.php');
 
-class MapWidget extends BaseWidgets {
-    
-    /**
-     * @override
-     */
-    function htmlComponent($instance) {
-        $this->map($instance);
+class MapWidget extends WP_Widget {
+    public $mapReady = false;
+
+    function __construct($id, $name, $description, $textdomain) {
+        parent::__construct(
+            $id,
+            esc_html__( $name,  $textdomain ),
+            array( 'description' => esc_html__( $description,  $textdomain ))
+        );
     }
 
-    function map($instance) {
-        $this->$mapReady = false;
-        $this->setId();
+    function register() {
+        add_action('widgets_init', array( $this, 'widgetInit' ) );
+    }
+
+    function widgetInit() {
+        register_widget( $this );
+    }
+
+    function widget( $args, $instance) {
+        echo $args['before_widget'];
+        print_r($instance);
+        $this->map();
+        echo $args['after_widget'];
+    }
+
+    function map() {
         /**
          * Create map or load html page
          */
         if($this->mapReady) {
-            $this->createMap($instance);
+            $this->createMap();
         } else {
             
             ?>
@@ -39,6 +54,7 @@ class MapWidget extends BaseWidgets {
                 <script src="<?= plugins_url() . '/WP-map-store-locator/includes/lib/ol-6.1.1/js/ol.js'?>"></script>
                 <script src="<?= plugins_url() . '/WP-map-store-locator/includes/lib/popper/popper.min.js'?>"></script>
                 <script src="<?= plugins_url() . '/WP-map-store-locator/includes/lib/bootstrap-4/js/bootstrap.min.js'?>"></script>
+                <script src="<?= plugins_url() . '/WP-map-store-locator/lib/autocomplete/dist/latest/bootstrap-autocomplete.js'?>"></script>
             </body>
             </html>     
             <?php
@@ -51,9 +67,10 @@ class MapWidget extends BaseWidgets {
     /**
      * Render map as component
      */
-    function createMap($instance) {
+    function createMap() {
         $this->ID = uniqid();
-        $this->simple = $instance["wp_isSimpleMap"];
+        $this->popupId = "popup-" . $this->ID;
+        $this->popupContentId = "popup-content-" . $this->ID;
         
         ?>
             <div class="container">
@@ -61,10 +78,15 @@ class MapWidget extends BaseWidgets {
                     <div id=<?= json_encode($this->ID);?> class="col-sm-12 p-0" style="height: 12em;"></div>
                 </div>
             </div>
-            <div id="popup-<?= json_encode($this->ID);?>" class="ol-popup">
-                <div id="popup-content-<?= json_encode($this->ID);?>"></div>
+            <div id="popup" class="ol-popup">
             </div>
             <script>
+            // replace ids - fix
+            var popupId =  <?= json_encode($this->popupId);?>;
+            var popup = document.getElementById("popup");
+            popup.id = popupId;
+            document.getElementById(popupId).innerHTML = `<div id="popup-content"></div>`
+
             var mapDefaultCenter = <?= json_encode(get_option('default_coordinates'));?> ||'-385579.42,6244601.85';
             var mapDefaultZoom = <?= json_encode(get_option('default_zoom'));?> || 7;
 
@@ -98,11 +120,10 @@ class MapWidget extends BaseWidgets {
             });
 
             // if advanced map we display all elements
-            var isSimple = <?= json_encode($instance);?>;
+            var isSimple = false;
             if(isSimple) {
                 var mapId = <?= json_encode($this->ID);?>;
-                var popupId = 'popup-' + mapId;
-                var popupHtml = 'popup-content-' + mapId;
+                var popupHtml = 'popup-content-' + <?= json_encode($this->ID);?>;
                 var overlayText = <?= json_encode(get_option('overlay_text'));?> || '';
                 var overlayMarker = <?= json_encode(get_option('overlay_marker'));?> || '';
                 var overlayTitle = <?= json_encode(get_option('overlay_title'));?> || '';
@@ -149,7 +170,9 @@ class MapWidget extends BaseWidgets {
                 }
 
                 // Popup behavior on marker clic
-                var content = document.getElementById(popupHtml);
+                var content = function () { 
+                    return document.getElementById(popupHtml);
+                };
                 
                 /**
                 * Hide popup if user clic out of marker
@@ -166,7 +189,7 @@ class MapWidget extends BaseWidgets {
                     if(overlayHtmlContent) {
                         content.innerHTML =  overlayHtmlContent;
                     } else {
-                        content.innerHTML = `
+                        document.getElementById(popupHtml).innerHTML = `
                         <div class="card m-2">
                             <div class="card-body mb-2 p-2">
                                 <h6 class="card-title overlay-title mb-2"><strong>` + overlayTitle + `</strong>
@@ -183,7 +206,7 @@ class MapWidget extends BaseWidgets {
                     map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
                         features.push(feature);
                     });
-                    if (features.length > 0 && content) {
+                    if (features.length > 0 && document.getElementById(popupHtml)) {
                         showPopup(mapDefaultCenter);
                     } else {
                         hidePopup();
@@ -195,19 +218,17 @@ class MapWidget extends BaseWidgets {
         <?php
     }
 
-    /**
-     * @override
-     */
+    public function update( $new_instance, $old_instance ) {
+        $instance = array();
+        $instance['mapTitle'] = ( ! empty( $new_instance['mapTitle'] ) ) ? strip_tags( $new_instance['mapTitle'] ) : '';
+        return $instance;
+    }
     function form($instance) {
-        ?>  
+        ?>
             <p>
-                <input id="<?php esc_attr( $this->get_field_id( 'wp_isSimpleMap' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'wp_isSimpleMap' ) ); ?>" type="checkbox" value="1" <?php checked( '1', $checkbox ); ?> />
-                <label for="<?php esc_attr( $this->get_field_id( 'wp_isSimpleMap' ) ); ?>"><?php _e( 'wp_isSimpleMap', 'text_domain' ); ?></label>
-            </p>            
-            <p>
-                <label for="<?php echo $this->get_field_id("mapCenterXY"); ?>">Center: </label>
-                <input placeholder="Default view coordinates" type="text" name="<?php echo $this->get_field_name("mapCenterXY"); ?>" id="<?php echo $this->get_field_id("mapCenterXY"); ?>"/>
-            </p>            
+                <label for="<?php echo $this->get_field_id("mapTitle"); ?>">Title: </label>
+                <input placeholder="Default map title" type="text" name="<?php echo $this->get_field_name("mapTitle"); ?>" id="<?php echo $this->get_field_id("mapTitle"); ?>"/>
+            </p>
         <?php
     }
 }
