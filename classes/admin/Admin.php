@@ -70,6 +70,9 @@ class Admin
         // set zoom field
         add_settings_field("default_zoom", "Zoom", array($this,"def_field_zoom"), "msl_plugin", "default_view_section");
         register_setting("msl_settings", "default_zoom");
+        // url to open page
+        add_settings_field("open_page", "Page to open", array($this,"open_page"), "msl_plugin", "default_view_section");
+        register_setting("msl_settings", "open_page");        
     }
 
     // section description text
@@ -90,6 +93,12 @@ class Admin
     function def_field_zoom() {
         ?>
             <input type="number" name="default_zoom" id="default_zoom" value="<?php echo get_option('default_zoom'); ?>" />
+        <?php
+    }
+
+    function open_page() {
+        ?>
+            <input type="text" name="open_page" id="data_png3_type" value="<?php echo get_option('open_page'); ?>" />
         <?php
     }
 
@@ -179,18 +188,18 @@ class Admin
         add_settings_field("data_png1_type", __( 'Type 1', 'msl_plugin' ), array($this,"data_png1_type"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_png1_type");
 
+        add_settings_field("data_png1_url", __( 'Image 1', 'msl_plugin' ), array($this,"data_png1_url"), "msl_plugin", "data_section");
+        register_setting("msl_settings", "data_png1_url");
+
         add_settings_field("data_png2_type", __( 'Type 2', 'msl_plugin' ), array($this,"data_png2_type"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_png2_type");
+
+        add_settings_field("data_png2_url", __( 'Image 2', 'msl_plugin' ), array($this,"data_png2_url"), "msl_plugin", "data_section");
+        register_setting("msl_settings", "data_png2_url");
 
         add_settings_field("data_png3_type", __( 'Type 3', 'msl_plugin' ), array($this,"data_png3_type"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_png3_type");
 
-        add_settings_field("data_png1_url", __( 'Image 1', 'msl_plugin' ), array($this,"data_png1_url"), "msl_plugin", "data_section");
-        register_setting("msl_settings", "data_png1_url");
-        
-        add_settings_field("data_png2_url", __( 'Image 2', 'msl_plugin' ), array($this,"data_png2_url"), "msl_plugin", "data_section");
-        register_setting("msl_settings", "data_png2_url");
-        
         add_settings_field("data_png3_url", __( 'Image 3', 'msl_plugin' ), array($this,"data_png3_url"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_png3_url");
     }
@@ -250,6 +259,5 @@ class Admin
         ?>
             <input type="text" name="data_png3_type" id="data_png3_type" value="<?php echo get_option('data_png3_type'); ?>" />
         <?php
-    }      
-
+    }
 }
