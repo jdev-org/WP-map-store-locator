@@ -172,6 +172,7 @@ class MslWidget extends WP_Widget {
             var overlayHtmlContent = <?= json_encode(get_option('overlay_html'));?> || '';
             var dataUrl = <?= json_encode(get_option('data_file_url'));?> || '';
             var dataSize = <?= json_encode(get_option('data_size'));?> || '';
+            var openPageUrl = <?= json_encode(get_option('open_page'));?> || '';
             var img = [
                 <?= json_encode(get_option('data_png1_url'));?>,
                 <?= json_encode(get_option('data_png2_url'));?>,
@@ -377,6 +378,12 @@ class MslWidget extends WP_Widget {
 
             } else {
                 jQuery('#'+ popupId).remove();
+                <?= $mapName ?>.on('click', evt => {
+                    // open contact page
+                    if(openPageUrl) {
+                        window.open(openPageUrl);
+                    }                    
+                })
             }
             </script>
         <?php
