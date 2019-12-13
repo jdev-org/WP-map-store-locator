@@ -34,6 +34,9 @@
     letter-spacing: 0px;
 }
 
-.card {
-    border-color: white;
+.address {
+    padding: 4px !important;
+    border-radius: 5px 5px 0px 0px !important;
+    border-color: rgba(0,0,0,0.4) !important;
+    border-width: 1.4px !important;
 }
