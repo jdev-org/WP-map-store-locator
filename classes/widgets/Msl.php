@@ -324,14 +324,20 @@ class MslWidget extends WP_Widget {
                         if (xhr.status === 200 && xhr.responseText) {
                             var response = xhr.responseText.length ? JSON.parse(xhr.responseText) : null;
                             if(response) {
+                                var crs = response.crs.properties.name || '';
                                 var features = [];
                                 var res = new ol.format.GeoJSON().readFeatures( response );
-                                res.forEach(e => {
-                                    if(e.getProperties().latitude || e.getProperties().longitude) {
-                                        e.getGeometry().transform(inSrs, toSrs);
-                                        features.push(e);
-                                    }
-                                });
+                                
+                                if(crs != 'EPSG:3857') {
+                                    res.forEach(e => {
+                                        if(e.getGeometry().getCoordinates().length > 0) {
+                                            e.getGeometry().transform(inSrs, toSrs);
+                                            features.push(e);
+                                        }
+                                    });
+                                } else {
+                                    features = res;
+                                }
                                 var layer = featuresToLayer(features);
                                 <?= $mapName ?>.addLayer(layer)
                             }
