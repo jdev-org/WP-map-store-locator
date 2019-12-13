@@ -69,8 +69,6 @@ class MslWidget extends WP_Widget {
      * Create map or load html page if not loaded
      */
     function initHTML($instance) {
-        print_r($instance);
-
         if($this->isMapReady) {
             $this->createMap($instance);
         } else {
@@ -103,26 +101,25 @@ class MslWidget extends WP_Widget {
      */
     function createMap($isSimpleMode) {
         $this->ID = uniqid();
-        $this->popupId = "popup-" . $this->ID;
-        $this->popupContentId = "popup-content-" . $this->ID;
         $this->locatorId = "locator-" . $this->ID;
         $mapName = 'map' . $this->ID;
+        $popupId = "popup-" . $mapName;
+        $popupHtml = "popup-content-" . $mapName;
         ?>
-            <div>
-                <div id="locator" style="display:none;" style="col-12">
-                    <input  class="address" placeholder="Saisir une adresse..." type="text">
-                </div>
-                <div id=<?= json_encode($this->ID);?> class="col-sm-12 p-0" style="height: 12em;"></div>
+            <div id="locator" style="display:none;" style="col-12">
+                <input  class="address" placeholder="Saisir une adresse..." type="text">
             </div>
-            <div id="popup" class="ol-popup">
+            <div id=<?= $mapName ?> class="col-sm-12 p-0" style="height: 12em;"></div>
+            <div id=<?= $popupId ?> class="ol-popup">
+                <div id=<?= $popupHtml ?>></div>
             </div>
+          
             <script>
-            // replace ids for popup
+            // ids for popup
             var id = <?= json_encode($this->ID);?>;
-            var popupId =  <?= json_encode($this->popupId);?>;
-            var popup = document.getElementById("popup");
-            popup.id = popupId;
-            document.getElementById(popupId).innerHTML = `<div id="popup-content"></div>`; // avoid popup-content deletation when id changed
+            var widgetDivId = <?= json_encode($this->ID.'-msl');?>;
+            var popupId =  <?= json_encode($popupId);?>;
+            var popupHtml = <?= json_encode($popupHtml);?>;
             var listId = 'list-' + id;
 
             // replace ids for locator
@@ -153,7 +150,7 @@ class MslWidget extends WP_Widget {
             mapDefaultCenter = xyStringToArray(mapDefaultCenter);
 
             var <?= $mapName ?> = new ol.Map({
-                target: <?= json_encode($this->ID);?>,
+                target: <?= json_encode($mapName);?>,
                 layers: [
                     new ol.layer.Tile({
                         source: new ol.source.OSM()
@@ -168,7 +165,6 @@ class MslWidget extends WP_Widget {
             // if advanced map we display all elements
             
             var mapId = <?= json_encode($this->ID);?>;
-            var popupHtml = 'popup-content-' + <?= json_encode($this->ID);?>;
             var overlayText = <?= json_encode(get_option('overlay_text'));?> || '';
             var overlayMarker = <?= json_encode(get_option('overlay_marker'));?> || '';
             var overlaySize = <?= json_encode(get_option('overlay_marker_size'));?> || 0.8;
@@ -176,14 +172,14 @@ class MslWidget extends WP_Widget {
             var overlayHtmlContent = <?= json_encode(get_option('overlay_html'));?> || '';
             var dataUrl = <?= json_encode(get_option('data_file_url'));?> || '';
             var dataSize = <?= json_encode(get_option('data_size'));?> || '';
-            var png1 = <?= json_encode(get_option('data_png1_url'));?> || '';
-            var png2 = <?= json_encode(get_option('data_png2_url'));?> || '';
-            var png3 = <?= json_encode(get_option('data_png3_url'));?> || '';
-            var dataType1 = <?= json_encode(get_option('data_png1_type'));?> || '';
-            var dataType2 = <?= json_encode(get_option('data_png2_type'));?> || '';
-            var dataType3 = <?= json_encode(get_option('data_png3_type'));?> || '';
-            var img = [png1,png2,png3];
-            var types = [dataType1,dataType2,dataType3];
+            var img = [
+                <?= json_encode(get_option('data_png1_url'));?>,
+                <?= json_encode(get_option('data_png2_url'));?>,
+                <?= json_encode(get_option('data_png3_url'));?>];
+            var types = [
+                <?= json_encode(get_option('data_png1_type'));?>,
+                <?= json_encode(get_option('data_png2_type'));?>,
+                <?= json_encode(get_option('data_png3_type'));?>];
             
             // js values
             var mapDiv;
@@ -191,15 +187,6 @@ class MslWidget extends WP_Widget {
             var iconFeature = new ol.Feature({
                 geometry: new ol.geom.Point(mapDefaultCenter),
             });
-            // popup creation                  
-            var overlay = new ol.Overlay({
-                element: document.getElementById(popupId),
-                autoPan: false,
-                offset: [0, -50]
-            });
-            // insert overlay to map                    
-            <?= $mapName ?>.setProperties('overlays',[overlay])
-
 
             if (overlayMarker ) { // avoid empty style and no ol.style.icon assertion error
                 var iconStyle = new ol.style.Style({
@@ -224,51 +211,55 @@ class MslWidget extends WP_Widget {
                 // add marker to map
                 <?= $mapName ?>.addLayer(layer);
             }
-
-            // Popup behavior on marker clic
-            var content = function () { 
-                return document.getElementById(popupHtml);
-            };
             
-            /**
-            * Hide popup if user clic out of marker
-                */
-            function hidePopup(){
-                overlay.setPosition(undefined);                        
-            }
-
-            /**
-            * show popup if user clic on marker
-                */
-            function showPopup(xy) {
-                overlay.setPosition(xy);
-                if(overlayHtmlContent) {
-                    content.innerHTML =  overlayHtmlContent;
-                } else {
-                    document.getElementById(popupHtml).innerHTML = `
-                    <div class="card m-2">
-                        <div class="card-body mb-2 p-2">
-                            <h6 class="card-title overlay-title mb-2"><strong>` + overlayTitle + `</strong>
-                            </h6></n>
-                            <span>`+ overlayText + `</span>
-                        </div>
-                    </div>`;
-                }
-            }
-            // feature select behavior - only one in the map
-            <?= $mapName ?>.on('click', evt => {
-                var features = [];
-                var coordinate = evt.coordinate;
-                <?= json_encode($this->ID);?>.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-                    features.push(feature);
-                });
-                if (features.length > 0 && document.getElementById(popupHtml)) {
-                    showPopup(mapDefaultCenter);
-                } else {
-                    hidePopup();
-                }
-            });
             if(!isSimpleMap) {
+                jQuery('#'+ popupId).css('display', 'none');
+                // feature select behavior - only one in the map
+                <?= $mapName ?>.on('click', evt => {
+                    var features = [];
+                    var overlay;
+                    <?= $mapName ?>.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+                        features.push(feature);
+                    });
+                    if(features.length) {
+                        // create overlay
+                        overlay = new ol.Overlay({
+                            element: document.getElementById('popup-' + <?= json_encode($mapName) ?>),
+                            autoPan: false,
+                            position: evt.coordinate,
+                            id: 'overlay-' + <?= json_encode($mapName) ?>
+                        });
+                        <?= $mapName ?>.addOverlay(overlay);
+                        
+                        // display popup
+                        jQuery('#'+ 'popup-' + <?= json_encode($mapName) ?>).css('display','inline-block');
+                        var html = "";
+                        // add content html
+                        if(!features[0].getProperties().adresse) {
+                            html = '<strong>'+ overlayTitle + '</strong>';
+                            html += '</br>'+ overlayText;
+                        } else {
+                            try {
+                                var f = features[0].getProperties();
+                                html = '<strong>'+ f.nom + '</strong>';
+                                html += '</br>'+ f.adresse + ', ' + f.code_postal + ', ' + f.ville;
+                                document.getElementById('popup-content-' + <?= json_encode($mapName) ?>).innerHTML = html;
+                            } catch (e) {
+                                html = "Contactez " + overlayTitle + " pour plus d'informations."
+                            }
+                        }
+                        document.getElementById('popup-content-' + <?= json_encode($mapName) ?>).innerHTML = html;
+
+                    } else {
+                        // hide popup
+                        if(<?= $mapName ?>.getOverlays().getArray().length) {
+                            jQuery('#'+ popupId).css('display', 'none');
+                            <?= $mapName ?>.getOverlays().getArray()[0].setPosition(undefined);
+                            <?= $mapName ?>.getOverlays().getArray().splice(0, <?= $mapName ?>.getOverlays().getArray().length);
+                        }
+                    }
+                });
+            
                 /**
                 * INPUT BEHAVIOR
                  */
@@ -384,6 +375,8 @@ class MslWidget extends WP_Widget {
                     getJsonLayer(dataUrl,'EPSG:4326', <?= $mapName ?>.getView().getProjection().getCode());
                 }
 
+            } else {
+                jQuery('#'+ popupId).remove();
             }
             </script>
         <?php
