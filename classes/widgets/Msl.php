@@ -61,7 +61,7 @@ class MslWidget extends WP_Widget {
             </p>
             <p>
                 <label for="<?php echo $this->get_field_id("msl_width"); ?>">Height (px): </label>
-                <input value="<?php echo $instance["msl_width"]; ?>" placeholder="Height in pixels" type="text" name="<?php echo $this->get_field_name("msl_width"); ?>" id="<?php echo $this->get_field_id("msl_width"); ?>"/>
+                <input value="<?php echo $instance["msl_width"]; ?>" placeholder="Width in pixels" type="text" name="<?php echo $this->get_field_name("msl_width"); ?>" id="<?php echo $this->get_field_id("msl_width"); ?>"/>
             </p>            
         <?php
     }
