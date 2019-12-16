@@ -7,6 +7,7 @@ Version: 1.0.0
 Author: JDev
 License: GPLv3 or later
 Domain Path: /languages
+Text Domain: WP-map-store-locator
 */
 include('classes/MslPlugin.php');
 

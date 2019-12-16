@@ -1,4 +1,14 @@
 <?php
+/*
+Plugin Name: Map Store Location
+
+Description: A plugin to display geographic data in a map.
+Version: 1.0.0
+Author: JDev
+License: GPLv3 or later
+Domain Path: /languages
+Text Domain: WP-map-store-locator
+*/
 // map store locator class
 class MslWidget extends WP_Widget {
     public $isMapReady;
@@ -8,8 +18,8 @@ class MslWidget extends WP_Widget {
     function __construct() {
         parent::__construct(
             'msl',
-            esc_html__( 'Map Store Locator', 'textdomain' ),
-            array( 'description' => esc_html__( 'Display stores or customers on a map', 'textdomain' ), )
+            __( 'Map Store Locator', 'WP-map-store-locator' ),
+            array( 'description' => __( 'A plugin to display geographic data in a map.', 'WP-map-store-locator' ))
         );
     }
     function register() {
@@ -28,7 +38,7 @@ class MslWidget extends WP_Widget {
     }
      
     function load_scripts() {
-        wp_enqueue_script('jquery');   
+        wp_enqueue_script('jquery');
     }
 
     function widgetInit() {
@@ -53,15 +63,15 @@ class MslWidget extends WP_Widget {
         ?>
             <p>
                 <input class="checkbox" type="checkbox" <?php checked( $instance[ 'msl_simple' ], 'on' ); ?> id="<?php echo $this->get_field_id( 'msl_simple' ); ?>" name="<?php echo $this->get_field_name( 'msl_simple' ); ?>" /> 
-                <label for="<?php echo $this->get_field_id( 'msl_simple' ); ?>">Simple Map</label>
+                <label for="<?php echo $this->get_field_id( 'msl_simple' ); ?>"><?php echo __( 'Simple map', 'WP-map-store-locator' ) ?></label>
             </p>        
             <p>
-                <label for="<?php echo $this->get_field_id("msl_height"); ?>">Height (px): </label>
-                <input value="<?php echo $instance["msl_height"]; ?>" placeholder="Height in pixels" type="text" name="<?php echo $this->get_field_name("msl_height"); ?>" id="<?php echo $this->get_field_id("msl_height"); ?>"/>
+                <label for="<?php echo $this->get_field_id("msl_height"); ?>"><?php echo __( 'Height (px, em, %)', 'WP-map-store-locator' ) ?></label>
+                <input value="<?php echo $instance["msl_height"]; ?>" placeholder="<?php echo __( 'Height', 'WP-map-store-locator' ) ?>" type="text" name="<?php echo $this->get_field_name("msl_height"); ?>" id="<?php echo $this->get_field_id("msl_height"); ?>"/>
             </p>
             <p>
-                <label for="<?php echo $this->get_field_id("msl_width"); ?>">Height (px): </label>
-                <input value="<?php echo $instance["msl_width"]; ?>" placeholder="Width in pixels" type="text" name="<?php echo $this->get_field_name("msl_width"); ?>" id="<?php echo $this->get_field_id("msl_width"); ?>"/>
+                <label for="<?php echo $this->get_field_id("msl_width"); ?>"><?php echo __( 'Width (px, em, %)', 'WP-map-store-locator' ) ?> </label>
+                <input value="<?php echo $instance["msl_width"]; ?>" placeholder="<?php echo __( 'Width', 'WP-map-store-locator' ) ?>" type="text" name="<?php echo $this->get_field_name("msl_width"); ?>" id="<?php echo $this->get_field_id("msl_width"); ?>"/>
             </p>            
         <?php
     }

@@ -11,8 +11,8 @@ class msl extends WP_Widget {
     function __construct() {
         parent::__construct(
             'msl',
-            esc_html__( 'Map Store Locator', 'textdomain' ),
-            array( 'description' => esc_html__( 'Display stores or customers on a map', 'textdomain' ), )
+            e__( 'Map Store Locator', 'WP-map-store-locator' ),
+            array( 'description' => e__( 'Display stores or customers on a map', 'WP-map-store-locator' ) )
         );
     }
  

@@ -1,4 +1,7 @@
-<?php 
+<?php
+/**
+ * Domain Path: /languages
+ */
 
 class Admin
 {
@@ -49,7 +52,7 @@ class Admin
                         // all the add_settings_field callbacks is displayed here
                         do_settings_sections("msl_plugin");
                         // Add the submit button to serialize the options
-                        submit_button('Save');
+                        submit_button(__('Save', 'WP-map-store-locator'));
                     ?>         
                 </form>
             </div>
@@ -63,15 +66,15 @@ class Admin
      */
     function view_section() {
         // create section
-        add_settings_section("default_view_section", "Map option", array($this,"def_section_view"), "msl_plugin");
+        add_settings_section("default_view_section", __( 'Map options', 'WP-map-store-locator' ), array($this,"def_section_view"), "msl_plugin");
         // set center field
-        add_settings_field("default_coordinates", "Coordinates", array($this,"def_field_coordinates"), "msl_plugin", "default_view_section");
+        add_settings_field("default_coordinates", __( 'Coordinates', 'WP-map-store-locator' ), array($this,"def_field_coordinates"), "msl_plugin", "default_view_section");
         register_setting("msl_settings", "default_coordinates");
         // set zoom field
-        add_settings_field("default_zoom", "Zoom", array($this,"def_field_zoom"), "msl_plugin", "default_view_section");
+        add_settings_field("default_zoom", __( 'Zoom', 'WP-map-store-locator' ), array($this,"def_field_zoom"), "msl_plugin", "default_view_section");
         register_setting("msl_settings", "default_zoom");
         // url to open page
-        add_settings_field("open_page", "Page to open", array($this,"open_page"), "msl_plugin", "default_view_section");
+        add_settings_field("open_page",__( 'Link to open', 'WP-map-store-locator' ), array($this,"open_page"), "msl_plugin", "default_view_section");
         register_setting("msl_settings", "open_page");        
     }
 
@@ -79,7 +82,7 @@ class Admin
     function def_section_view() {
         ?>
             <div style="border-bottom: 1px solid black;">
-                Default map view options.
+                <?php echo __("Default map view options.", "WP-map-store-locator") ?>
             </div>
         <?php
     }
@@ -108,24 +111,24 @@ class Admin
      */
     function overlay_section() {
         // create section
-        add_settings_section("overlay_section", "Popup options", array($this,"def_section_overlay"), "msl_plugin");
+        add_settings_section("overlay_section", __("Popup options","WP-map-store-locator"), array($this,"def_section_overlay"), "msl_plugin");
         // set overlay location coordinates
-        add_settings_field("overlay_coordinates", "Location", array($this,"def_overlay_coordinates"), "msl_plugin", "overlay_section");
+        add_settings_field("overlay_coordinates", __("Location","WP-map-store-locator"), array($this,"def_overlay_coordinates"), "msl_plugin", "overlay_section");
         register_setting("msl_settings", "overlay_coordinates");
         // set overlay title
-        add_settings_field("overlay_title", __( 'Title', 'msl_plugin' ), array($this,"def_overlay_title"), "msl_plugin", "overlay_section");
+        add_settings_field("overlay_title",__( 'Title', 'WP-map-store-locator' ), array($this,"def_overlay_title"), "msl_plugin", "overlay_section");
         register_setting("msl_settings", "overlay_title");
         // set overlay text
-        add_settings_field("overlay_text", "Text", array($this,"def_overlay_text"), "msl_plugin", "overlay_section");
+        add_settings_field("overlay_text", __("Text", "WP-map-store-locator"), array($this,"def_overlay_text"), "msl_plugin", "overlay_section");
         register_setting("msl_settings", "overlay_text");
         // overlay marker
-        add_settings_field("overlay_marker", "Marker Icon", array($this,"def_overlay_marker"), "msl_plugin", "overlay_section");
+        add_settings_field("overlay_marker",  __("Marker Icon", "WP-map-store-locator"), array($this,"def_overlay_marker"), "msl_plugin", "overlay_section");
         register_setting("msl_settings", "overlay_marker");
         // overlay marker size
-        add_settings_field("overlay_marker_size", "Marker size (0-1)", array($this,"overlay_marker_size"), "msl_plugin", "overlay_section");
+        add_settings_field("overlay_marker_size", __("Marker size (0-1)", "WP-map-store-locator"), array($this,"overlay_marker_size"), "msl_plugin", "overlay_section");
         register_setting("msl_settings", "overlay_marker_size");                
         // overlay html content
-        add_settings_field("overlay_html", "HTML Content", array($this,"def_overlay_html"), "msl_plugin", "overlay_section");
+        add_settings_field("overlay_html",__("HTML content", "WP-map-store-locator"), array($this,"def_overlay_html"), "msl_plugin", "overlay_section");
         register_setting("msl_settings", "overlay_html");
     }
 
@@ -133,7 +136,7 @@ class Admin
     function def_section_overlay() {
         ?>
             <div style="border-bottom: 1px solid black;">
-                Default popup options.
+                <?php echo __("Default popup options.", "WP-map-store-locator") ?>
             </div>
         <?php
     }
@@ -177,30 +180,30 @@ class Admin
      * Contain all params to display data to map
      */
     function data_section () {
-        add_settings_section("data_section", "Data options", array($this,"section_data_title"), "msl_plugin");
+        add_settings_section("data_section", __("Data options", "WP-map-store-locator"), array($this,"section_data_title"), "msl_plugin");
         // data file url input
-        add_settings_field("data_file_url", __( 'URL', 'msl_plugin' ), array($this,"data_file_url"), "msl_plugin", "data_section");
+        add_settings_field("data_file_url", __( 'URL', 'WP-map-store-locator' ), array($this,"data_file_url"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_file_url");
 
-        add_settings_field("data_size", __( 'Size (0-1)', 'msl_plugin' ), array($this,"data_size"), "msl_plugin", "data_section");
+        add_settings_field("data_size", __( 'Size (0-1)', 'WP-map-store-locator' ), array($this,"data_size"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_size");
 
-        add_settings_field("data_png1_type", __( 'Type 1', 'msl_plugin' ), array($this,"data_png1_type"), "msl_plugin", "data_section");
+        add_settings_field("data_png1_type", __( 'Type 1', 'WP-map-store-locator' ), array($this,"data_png1_type"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_png1_type");
 
-        add_settings_field("data_png1_url", __( 'Image 1', 'msl_plugin' ), array($this,"data_png1_url"), "msl_plugin", "data_section");
+        add_settings_field("data_png1_url", __( 'Image 1', 'WP-map-store-locator' ), array($this,"data_png1_url"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_png1_url");
 
-        add_settings_field("data_png2_type", __( 'Type 2', 'msl_plugin' ), array($this,"data_png2_type"), "msl_plugin", "data_section");
+        add_settings_field("data_png2_type", __( 'Type 2', 'WP-map-store-locator' ), array($this,"data_png2_type"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_png2_type");
 
-        add_settings_field("data_png2_url", __( 'Image 2', 'msl_plugin' ), array($this,"data_png2_url"), "msl_plugin", "data_section");
+        add_settings_field("data_png2_url", __( 'Image 2', 'WP-map-store-locator' ), array($this,"data_png2_url"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_png2_url");
 
-        add_settings_field("data_png3_type", __( 'Type 3', 'msl_plugin' ), array($this,"data_png3_type"), "msl_plugin", "data_section");
+        add_settings_field("data_png3_type", __( 'Type 3', 'WP-map-store-locator' ), array($this,"data_png3_type"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_png3_type");
 
-        add_settings_field("data_png3_url", __( 'Image 3', 'msl_plugin' ), array($this,"data_png3_url"), "msl_plugin", "data_section");
+        add_settings_field("data_png3_url", __( 'Image 3', 'WP-map-store-locator' ), array($this,"data_png3_url"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_png3_url");
     }
 
@@ -208,7 +211,7 @@ class Admin
     function section_data_title() {
         ?>
             <div style="border-bottom: 1px solid black;">
-                Options to display data on the map.
+               <?php echo __("Options to display data on the map.", "WP-map-store-locator") ?>
             </div>
         <?php
     }
