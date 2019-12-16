@@ -1,10 +1,4 @@
 <?php
-/*
-Plugin Name: WP-map-store-locator
-Description: un plugin de test pour l’ajout d’un menu admin WordPress
-Author: JDev
-Version: 0.1
-*/
 // map store locator class
 class MslWidget extends WP_Widget {
     public $isMapReady;
@@ -30,7 +24,6 @@ class MslWidget extends WP_Widget {
         if (isset($atts['map'])) {
             $isSimpleMap = $atts['map'] === 'simple' ? 'on' : 'off';
         }
-        print_r($atts);
         return $this->initHTML(array('msl_simple' => $isSimpleMap, 'msl_height' => $atts['height'], 'msl_width' => $atts['width']));
     }
      
@@ -61,14 +54,10 @@ class MslWidget extends WP_Widget {
             <p>
                 <input class="checkbox" type="checkbox" <?php checked( $instance[ 'msl_simple' ], 'on' ); ?> id="<?php echo $this->get_field_id( 'msl_simple' ); ?>" name="<?php echo $this->get_field_name( 'msl_simple' ); ?>" /> 
                 <label for="<?php echo $this->get_field_id( 'msl_simple' ); ?>">Simple Map</label>
-            </p>
-            <p>
-                <label for="<?php echo $this->get_field_id("msl_width"); ?>">Width (px): </label>
-                <input placeholder="Width in pixels" type="text" name="<?php echo $this->get_field_name("msl_width"); ?>" id="<?php echo $this->get_field_id("msl_width"); ?>"/>
-            </p>            
+            </p>        
             <p>
                 <label for="<?php echo $this->get_field_id("msl_height"); ?>">Height (px): </label>
-                <input placeholder="Height in pixels" type="text" name="<?php echo $this->get_field_name("msl_height"); ?>" id="<?php echo $this->get_field_id("msl_height"); ?>"/>
+                <input value="<?php echo $instance["msl_height"]; ?>" placeholder="Height in pixels" type="text" name="<?php echo $this->get_field_name("msl_height"); ?>" id="<?php echo $this->get_field_id("msl_height"); ?>"/>
             </p>
         <?php
     }
@@ -117,11 +106,11 @@ class MslWidget extends WP_Widget {
         ?>
             <div id="locator" style="display:none;" style="col-12">
                 <input  class="address" placeholder="Saisir une adresse..." type="text">
-            </div>
-            <div id=<?= $mapName ?> 
+            </div>            
+            <div id=<?= $mapName ?>
                 style="
-                    height:<?= $isSimpleMode['msl_height'] ? $isSimpleMode['msl_height'] : '15em;' ;?>
-                    width:<?= $isSimpleMode['msl_width'] ? $isSimpleMode['msl_width'] : '100%;' ;?>
+                    height:<?= $isSimpleMode['msl_height'] ? $isSimpleMode['msl_height'] .';': '15em;' ;?>
+                    width:<?= $isSimpleMode['msl_width'] ? $isSimpleMode['msl_width'] . ';' : '100%;' ;?>
                     ">
             </div>
             <div id=<?= $popupId ?> class="ol-popup">
