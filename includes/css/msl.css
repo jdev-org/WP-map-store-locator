@@ -76,7 +76,7 @@ input-text {
   cursor: pointer;
   background-color: #fff; 
   border-bottom: 1px solid #d4d4d4;
-  font-size: 0.6em;
+  font-size: 12px;
 }
 
 /*when hovering an item:*/
