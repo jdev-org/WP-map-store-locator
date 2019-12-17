@@ -1,3 +1,6 @@
+/*
+  POPUP OPENLAYERS
+*/
 .ol-popup {
     position: absolute;
     background-color: white;
@@ -10,6 +13,7 @@
     left: -50px;
     min-width: 180px;
     text-align: left;
+    font-size: 14px;
   }
   
   .ol-popup:after, .ol-popup:before {
@@ -34,10 +38,55 @@
     margin-left: -11px;
   }
 
-.address {
-    padding: 4px !important;
-    border-radius: 5px 5px 0px 0px !important;
-    border-color: rgba(0,0,0,0.4) !important;
-    border-width: 1.4px !important;
-    margin:0px!important;
+
+/*AUTOCOMPLETE*/
+
+.autocomplete {
+  position: relative;
+  margin-bottom: 0px;
+}
+
+/**input**/
+.input-search {
+  border: 1px solid #cccccc;
+  background-color: #f1f1f1 !important;
+  font-size: 16px !important;
+  padding: 10px !important;
+}
+
+/**input[type=text]**/
+input-text {
+  background-color: #f1f1f1;
+  width: 100%;
+}
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4 !important;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff; 
+  border-bottom: 1px solid #d4d4d4;
+  font-size: 0.6em;
+}
+
+/*when hovering an item:*/
+.autocomplete-items div:hover {
+  background-color: #e9e9e9 !important; 
+}
+
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+  background-color: DodgerBlue !important; 
+  color: #ffffff; 
+  
 }

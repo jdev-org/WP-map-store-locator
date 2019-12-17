@@ -113,14 +113,15 @@ class MslWidget extends WP_Widget {
      */
     function createMap($isSimpleMode) {
         $this->ID = uniqid();
-        $this->locatorId = "locator-" . $this->ID;
         $mapName = 'map' . $this->ID;
         $popupId = "popup-" . $mapName;
         $popupHtml = "popup-content-" . $mapName;
+        $inputId =  "search-" . $mapName;
         ?>
-            <div id="locator" style="display:none;" style="col-12">
-                <input  class="address" placeholder="Saisir une adresse..." type="text">
-            </div>            
+            <!--Make sure the form has the autocomplete function switched off:-->
+            <div class="autocomplete">
+                <input class="input-search input-text" id=<?= $inputId ?> type="text" name="nominatim" placeholder="Place, City, etc.">
+            </div>
             <div id=<?= $mapName ?>
                 style="
                     height:<?= $isSimpleMode['msl_height'] ? $isSimpleMode['msl_height'] .';': '15em;' ;?>
@@ -137,14 +138,7 @@ class MslWidget extends WP_Widget {
             var widgetDivId = <?= json_encode($this->ID.'-msl');?>;
             var popupId =  <?= json_encode($popupId);?>;
             var popupHtml = <?= json_encode($popupHtml);?>;
-            var listId = 'list-' + id;
-
-            // replace ids for locator
-            var locator = document.getElementById('locator');
-            if(locator) {
-                locator.id = <?= json_encode($this->locatorId);?>;
-            }
-
+            var inputId = <?= json_encode($inputId);?>;
             // set values from php
             var mapDefaultCenter = <?= json_encode(get_option('default_coordinates'));?> ||'-385579.42,6244601.85';
             var mapDefaultZoom = <?= json_encode(get_option('default_zoom'));?> || 7;
@@ -175,7 +169,8 @@ class MslWidget extends WP_Widget {
                 ],
                 view: new ol.View({
                     center: mapDefaultCenter,
-                    zoom: mapDefaultZoom
+                    zoom: mapDefaultZoom,
+                    projection: 'EPSG:3857'
                 })
             });
 
@@ -277,59 +272,6 @@ class MslWidget extends WP_Widget {
                         }
                     }
                 });
-            
-                /**
-                * INPUT BEHAVIOR
-                 */
-                jQuery('#'+ locator.id).css('display','');
-                function createSelection(options) {
-                    jQuery('#'+ locator.id + ' > datalist').remove();
-                    var optionsHTML = ['<datalist id="' + listId + '">'];
-                    options.forEach(e=>{
-                        var xy =  e.lon + ',' + e.lat;
-                        var val = '';
-                        if(e.address.county) {
-                            val = e.address.county + ', ' + e.address.postcode + ' (' + e.address.country_code + ')'; 
-                        } else if (e.address.country && e.address.state){
-                            val = e.address.state + ', ' + e.address.country; 
-                        }
-                        
-                        if(xy && val) {
-                            optionsHTML.push('<option onclick="console.log(this)" location="'+ xy +'" value="' + val + '">');
-                        }
-                        
-                    });
-                    optionsHTML.push('</datalist>');
-                    return optionsHTML.join('');
-                }
-                var input = jQuery('#'+ locator.id + ' > input');
-                input.attr('list',listId);
-                input.on('keyup', function(e){
-                    jQuery('#'+ locator.id + ' > datalist').remove();
-                    let el = this;
-                    if(this.value && this.value.length > 3 && !jQuery('#'+listId).length) {
-                        var xhr = new XMLHttpRequest();
-                        xhr.open('GET', 'https://nominatim.openstreetmap.org/search?q='+ this.value + '&format=json&addressdetails=1&limit=5');
-                        xhr.onload = function() {
-                            if (xhr.status === 200 && xhr.responseText) {
-                                var response = xhr.responseText.length ? JSON.parse(xhr.responseText) : null;
-                                if(response) {
-                                    jQuery('#'+ locator.id).append(createSelection(response)); 
-                                }
-                            }
-                            else {
-                                console.log('fail request');
-                            }
-                        };
-                        xhr.send();
-                    }
-                });
-                input.on('select', function(e){
-                    jQuery('#'+ locator.id + ' > datalist').remove();
-                })
-                input.on('focus', function(e){
-                    jQuery('#'+ locator.id + ' > datalist').remove();
-                })
 
                 /**
                 * JSON READER
@@ -399,8 +341,161 @@ class MslWidget extends WP_Widget {
                     getJsonLayer(dataUrl,'EPSG:4326', <?= $mapName ?>.getView().getProjection().getCode());
                 }
 
+                /**
+                    Autocomplete element behavior
+                 */
+                function autocomplete(inp) {
+                    /*the autocomplete function takes two arguments,
+                    the text field element and an array of possible autocompleted values:*/
+                    var currentFocus;
+                    /*execute a function when someone writes in the text field:*/
+                    inp.addEventListener("input", function(e) {
+                        var a, b, i, val = this.value;
+                        /*close any already open lists of autocompleted values*/
+                        closeAllLists();
+                        if (!val) { return false;}
+                        currentFocus = -1;
+                        /*create a DIV element that will contain the items (values):*/
+                        a = document.createElement("DIV");
+                        a.setAttribute("id", this.id + "autocomplete-list");
+                        a.setAttribute("class", "autocomplete-items");
+                        /*append the DIV element as a child of the autocomplete container:*/
+                        this.parentNode.appendChild(a);
+                        /*Call API and display responses*/
+                        search(val, a);
+                    });
+                    /**
+                        Execute a function presses a key on the keyboard:
+                    */
+                    inp.addEventListener("keydown", function(e) {
+                        var x = document.getElementById(this.id + "autocomplete-list");
+                        if (x) x = x.getElementsByTagName("div");
+                        if (e.keyCode == 40) {
+                            /*If the arrow DOWN key is pressed,
+                            increase the currentFocus variable:*/
+                            currentFocus++;
+                            /*and and make the current item more visible:*/
+                            addActive(x);
+                        } else if (e.keyCode == 38) { //up
+                            /*If the arrow UP key is pressed,
+                            decrease the currentFocus variable:*/
+                            currentFocus--;
+                            /*and and make the current item more visible:*/
+                            addActive(x);
+                        } else if (e.keyCode == 13) {
+                            /*If the ENTER key is pressed, prevent the form from being submitted,*/
+                            e.preventDefault();
+                            if (currentFocus > -1) {
+                            /*and simulate a click on the "active" item:*/
+                            if (x) x[currentFocus].click();
+                            }
+                        }
+                    });
+                    /*
+                    * Create div to append results
+                    */
+                    function displayList(results, parent) {
+                        var b;
+                        var options = [];
+                        results.forEach(e => {
+                            b = document.createElement("DIV");
+                            var xy =  e.lon + ',' + e.lat;
+                            var val = '';
+                            var place = e.address;
+                            if(place.county && place.country) {
+                                //val = place.county + ', ' + place.postcode + ' (' + place.country_code + ')';
+                                val = place.county + ', ' + place.country;
+                                val += place.postcode ? ', ' + place.postcode : '';
+                                val += place.country_code ? ' (' + place.country_code + ')' : '';
+                            } else if (place.country && place.state){
+                                val = place.state + ', ' + place.country; 
+                            }
+                            if(xy && val && options.indexOf(val) < 0) {
+                                options.push(val);
+                                b.innerHTML = "<span>" + val + "</span>";
+                                b.innerHTML += "<input type='hidden' value='" + val + "' lonlat='" + xy + "'>";
+                                b.innerHTML += "<input type='hidden' value='" + xy + "'>";
+                                b.addEventListener("click", function(e) {
+                                    /*insert the value for the autocomplete text field:*/
+                                    inp.value = this.getElementsByTagName("input")[0].value;
+                                    inp.xy = this.getElementsByTagName("input")[1].value;
+                                    let center = xyStringToArray(inp.xy);
+                                    center = ol.proj.fromLonLat(center);
+                                    <?= $mapName ?>.getView().setCenter(center);
+                                    /*close the list of autocompleted values,
+                                    (or any other open lists of autocompleted values:*/
+                                    closeAllLists();
+                                });
+                                parent.appendChild(b);            
+                            }
+                        });
+                    }
+
+                    /**
+                        Behavior when user input letters
+                     */
+                    function search(value, parent) {
+                        if(value &&value.length > 3) {
+                            var xhr = new XMLHttpRequest();
+                            xhr.open('GET', 'https://nominatim.openstreetmap.org/search?q='+ value + '&format=json&addressdetails=1&limit=5');
+                            xhr.onload = function() {
+                                if (xhr.status === 200 && xhr.responseText) {
+                                    var response = xhr.responseText.length ? JSON.parse(xhr.responseText) : null;
+                                    if(response) {
+                                        displayList(response, parent);
+                                    }
+                                }
+                                else {
+                                    console.log('fail request');
+                                }
+                            };
+                            xhr.send();
+                        }
+                    }
+                    /**
+                        A function to classify an item as "active":
+                     */
+                    function addActive(x) {
+                        if (!x) return false;
+                        /*start by removing the "active" class on all items:*/
+                        removeActive(x);
+                        if (currentFocus >= x.length) currentFocus = 0;
+                        if (currentFocus < 0) currentFocus = (x.length - 1);
+                        /*add class "autocomplete-active":*/
+                        x[currentFocus].classList.add("autocomplete-active");
+                    }
+                    /**
+                        a function to remove the "active" class from all autocomplete items:
+                     */
+                    function removeActive(x) {
+                        for (var i = 0; i < x.length; i++) {
+                        x[i].classList.remove("autocomplete-active");
+                        }
+                    }
+                    /**
+                        close all autocomplete lists in the document
+                     */
+                    function closeAllLists(elmnt) {
+                        /*except the one passed as an argument:*/
+                        var x = document.getElementsByClassName("autocomplete-items");
+                        for (var i = 0; i < x.length; i++) {
+                            if (elmnt != x[i] && elmnt != inp) {
+                                x[i].parentNode.removeChild(x[i]);
+                            }
+                        }
+                    }
+                    /**
+                        execute a function when someone clicks in the document:
+                    */
+                    document.addEventListener("click", function (e) {
+                        closeAllLists(e.target);
+                    });
+                }
+                autocomplete(document.getElementById("<?= $inputId ?>"));
+
             } else {
                 jQuery('#'+ popupId).remove();
+                jQuery('#'+ "<?= $inputId ?>").remove();
                 <?= $mapName ?>.on('click', evt => {
                     // open contact page
                     if(openPageUrl) {
