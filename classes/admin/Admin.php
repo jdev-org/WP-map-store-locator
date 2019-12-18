@@ -87,7 +87,7 @@ class Admin
             </div>
             </br>
             </br>
-            <?php echo __("Get coordinates in EPSG:3857 from ", "WP-map-store-locator") ?>
+            <?php echo __("Get coordinates in EPSG:3857 (lon, lat) from ", "WP-map-store-locator") ?>
             <a href="https://app.dogeo.fr/Projection/#/point-to-coords" target="_blank">
                 <?php echo __("Dogeo web site. ", "WP-map-store-locator") ?>
             </a>
@@ -215,7 +215,7 @@ class Admin
             </div>
             </br>
             </br>
-            <span><?php echo __("Display data with projection ", "WP-map-store-locator") ?><a href="http://epsg.io/3857" target="_blank">EPSG:3857.</a></span>
+            <span><?php echo __("Display data with projection ", "WP-map-store-locator") ?><a href="http://epsg.io/4326" target="_blank">EPSG:4326.</a></span>
         <?php
     }
 

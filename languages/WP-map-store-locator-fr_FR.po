@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WP-map-store-locator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-16 15:41+0000\n"
-"PO-Revision-Date: 2019-12-16 15:42+0000\n"
+"POT-Creation-Date: 2019-12-18 14:04+0000\n"
+"PO-Revision-Date: 2019-12-18 14:05+0000\n"
 "Last-Translator: jdev <gaetan.bruel@jdev.fr>\n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
@@ -14,59 +14,64 @@ msgstr ""
 "X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.3.1; wp-5.3.1"
 
-#: classes/admin/Admin.php:55
+#: classes/admin/Admin.php:56
 msgid "Save"
 msgstr "Enregistrer"
 
-#: classes/admin/Admin.php:69
+#: classes/admin/Admin.php:70
 msgid "Map options"
 msgstr "Options de la carte"
 
-#: classes/admin/Admin.php:71
+#: classes/admin/Admin.php:72
 msgid "Coordinates"
 msgstr "Coordonnées"
 
-#: classes/admin/Admin.php:74
-msgid "Zoom"
-msgstr "Niveau de zoom"
+#: classes/admin/Admin.php:75
+msgid "Zoom (1 - 20)"
+msgstr "Zoom (valeur de 1 à 20)"
 
-#: classes/admin/Admin.php:77
+#: classes/admin/Admin.php:78
 msgid "Link to open"
 msgstr "Page à consulter"
 
-#: classes/admin/Admin.php:85
+#: classes/admin/Admin.php:86
 msgid "Default map view options."
 msgstr "Options d'affichage de la carte à l'ouverture."
 
-#: classes/admin/Admin.php:114
+#: classes/admin/Admin.php:90
+msgid "Get coordinates in EPSG:3857 (lon, lat) from "
+msgstr "Obtenez les coordonnées en EPSG:3857 (lon, lat) depuis le site"
+
+#: classes/admin/Admin.php:92
+msgid "Dogeo web site. "
+msgstr "le site internet Dogeo"
+
+#: classes/admin/Admin.php:121
 msgid "Popup options"
 msgstr "Options d'affichage de l'infobulle"
 
-#: classes/admin/Admin.php:116
-msgid "Location"
-msgstr "Localisation"
-
-#: classes/admin/Admin.php:119
+#: classes/admin/Admin.php:123
 msgid "Title"
 msgstr "Titre"
 
-#: classes/admin/Admin.php:122
+#: classes/admin/Admin.php:126
 msgid "Text"
 msgstr "Description"
 
-#: classes/admin/Admin.php:125
+#: classes/admin/Admin.php:129
 msgid "Marker Icon"
 msgstr "Pictogramme"
 
-#: classes/admin/Admin.php:128
+#: classes/admin/Admin.php:132 classes/admin/Admin.php:188
+#: classes/admin/Admin.php:280
 msgid "Marker size (0-1)"
 msgstr "Taille du pictogramme (0-1)"
 
-#: classes/admin/Admin.php:131
+#: classes/admin/Admin.php:135
 msgid "HTML content"
 msgstr "Contenu HTML"
 
-#: classes/admin/Admin.php:139
+#: classes/admin/Admin.php:143
 msgid "Default popup options."
 msgstr "Options d'affichage de l'infobulle par défaut."
 
@@ -77,10 +82,6 @@ msgstr "Options du jeu de données"
 #: classes/admin/Admin.php:185
 msgid "URL"
 msgstr "URL"
-
-#: classes/admin/Admin.php:188
-msgid "Size (0-1)"
-msgstr "Taille (0-1)"
 
 #: classes/admin/Admin.php:191
 msgid "Type 1"
@@ -109,6 +110,18 @@ msgstr "Symbole 3"
 #: classes/admin/Admin.php:214
 msgid "Options to display data on the map."
 msgstr "Options par défaut d'affichage des données sur la carte"
+
+#: classes/admin/Admin.php:218
+msgid "Display data with projection "
+msgstr "Afficher les données dans la projection "
+
+#: classes/admin/Admin.php:275 classes/admin/Admin.php:288
+msgid "Search options"
+msgstr "Options de la barre de recherche"
+
+#: classes/admin/Admin.php:277
+msgid "Marker URL"
+msgstr "URL de l'icône"
 
 #: classes/widgets/Msl.php:21
 msgid "Map Store Locator"
