@@ -272,8 +272,12 @@ class MslWidget extends WP_Widget {
                 var html = "";
                 // add content html
                 if(feature.id_ === 'home-feature') {
-                    html = '<strong>'+ overlayTitle + '</strong>';
-                    html += '</br>'+ overlayText;
+                    if(overlayHtmlContent.length > 0) {
+                        html = overlayHtmlContent;
+                    } else if (overlayTitle.length && overlayText.length) {
+                        html = '<strong>'+ overlayTitle + '</strong>';
+                        html += '</br>'+ overlayText;
+                    }
                 } else {
                     try {
                         var f = feature.getProperties();
@@ -281,8 +285,11 @@ class MslWidget extends WP_Widget {
                         html += '</br>'+ f.adresse + ', ' + f.code_postal + ', ' + f.ville;
                         document.getElementById('popup-content-' + map.get('target')).innerHTML = html;
                     } catch (e) {
-                        html = "Contactez " + overlayTitle + " pour plus d'informations."
+                        html = "Contactez " + overlayTitle + " pour plus d'informations.";
                     }
+                }
+                if(html.length < 1) {
+                    html = "Contactez " + overlayTitle + " pour plus d'informations.";
                 }
                 document.getElementById('popup-content-' + map.get('target')).innerHTML = html;
             }
