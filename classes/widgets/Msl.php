@@ -477,7 +477,7 @@ class MslWidget extends WP_Widget {
                                 b.innerHTML += "<input type='hidden' value='" + xy + "'>";
                                 b.addEventListener("click", function(e) {
                                     /*insert the value for the autocomplete text field:*/
-                                    inp.value = this.getElementsByTagName("input")[0].value;
+                                    inp.value = this.getElementsByTagName("span")[0].innerHTML
                                     inp.xy = this.getElementsByTagName("input")[1].value;
                                     let center = xyStringToArray(inp.xy);
                                     center = ol.proj.fromLonLat(center);
