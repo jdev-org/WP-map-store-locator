@@ -2,13 +2,17 @@
 
 /**
  * Trigger this file on Plugin uninstall
- *
- * @package  msl
  */
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	die;
 }
+
+
+
+/**
+ * Remove all options
+ */
 
 delete_option('msl_data_file_url');
 delete_option('msl_data_png1_type');
@@ -28,10 +32,3 @@ delete_option('msl_overlay_marker');
 delete_option('msl_overlay_marker_size');
 delete_option('msl_overlay_text');
 delete_option('msl_overlay_title');
-
-
-
-
-/**
- * Remove all options
- */
