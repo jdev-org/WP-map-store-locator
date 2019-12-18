@@ -144,9 +144,6 @@ class MslWidget extends WP_Widget {
             var mapDefaultZoom = <?= json_encode(get_option('default_zoom'));?> || 7;
             var isSimpleMap = <?= json_encode($isSimpleMode['msl_simple']);?> === "on";
 
-            // map layers already loaded
-            var layers = [];
-
             /**
             * Convert string coordinates to real array
             */
@@ -178,8 +175,6 @@ class MslWidget extends WP_Widget {
             });
 
             // if advanced map we display all elements
-            
-            var mapId = <?= json_encode($this->ID);?>;
             var overlayText = <?= json_encode(get_option('overlay_text'));?> || '';
             var overlayMarker = <?= json_encode(get_option('overlay_marker'));?> || '';
             var overlaySize = <?= json_encode(get_option('overlay_marker_size'));?> || 0.8;
@@ -196,21 +191,14 @@ class MslWidget extends WP_Widget {
                 <?= json_encode(get_option('data_png1_type'));?>,
                 <?= json_encode(get_option('data_png2_type'));?>,
                 <?= json_encode(get_option('data_png3_type'));?>];
-            
             var searchMarker = <?= json_encode(get_option('marker_search_url'));?> || '';
             var searchSize = <?= json_encode(get_option('marker_search_size'));?> || '';
             
-            // js values
-            var mapDiv;
-
-            //mapDefaultCenter -> xy
-            //overlayMarker -> marker
-            //overlaySize -> size
             function addPoint(xy, marker, size, mapName, id) {
                 var iconFeature = new ol.Feature({
                     geometry: new ol.geom.Point(xy),
                 });
-                iconFeature.setId(id+'-feature');
+                iconFeature.setId(id);
                 if (marker ) { // avoid empty style and no ol.style.icon assertion error
                     var iconStyle = new ol.style.Style({
                         image: new ol.style.Icon({
@@ -224,6 +212,9 @@ class MslWidget extends WP_Widget {
                 
                     iconFeature.setStyle(iconStyle);
                     // create and add layers
+                    if(getLayerById(id, mapName)) {
+                        mapName.removeLayer(id);
+                    }
                     var layer = new ol.layer.Vector({
                         source: new ol.source.Vector({
                             features: [
@@ -238,15 +229,14 @@ class MslWidget extends WP_Widget {
                     } else {
                         <?= $mapName ?>.addLayer(layer);
                     }
-                    layers.push(layers.ol_uid);
                 }                
             }
 
-            addPoint(mapDefaultCenter, overlayMarker, overlaySize, <?= $mapName ?>, null);
+            addPoint(mapDefaultCenter, overlayMarker, overlaySize, <?= $mapName ?>, 'home-feature');
 
             /**
-                Get layer by name from map
-                */
+             * Return layer if alrady exist or false
+             */
             
             function getLayerById(id, map) {
                 var find = false;
@@ -256,10 +246,53 @@ class MslWidget extends WP_Widget {
                     };
                 });
                 return find;
-            }            
-           
+            }
+
+            function displayPopup(feature, map) {
+                if(feature.id_ === 'search_marker') {
+                    return;
+                }
+                // remove old popup if exist
+                jQuery('#'+ popupId).css('display', 'none');
+                if(map.getOverlays().getArray().length) {
+                    map.getOverlays().getArray()[0].setPosition(undefined);
+                    map.getOverlays().getArray().splice(0, map.getOverlays().getArray().length);
+                }
+                // create overlay
+                var overlay = new ol.Overlay({
+                    element: document.getElementById('popup-' + map.get('target')),
+                    autoPan: false,
+                    position: feature.getGeometry().getCoordinates(),
+                    id: 'overlay-' + map.get('target')
+                });
+                map.addOverlay(overlay);
+                
+                // display popup
+                jQuery('#'+ 'popup-' + map.get('target')).css('display','inline-block');
+                var html = "";
+                // add content html
+                if(feature.id_ === 'home-feature') {
+                    html = '<strong>'+ overlayTitle + '</strong>';
+                    html += '</br>'+ overlayText;
+                } else {
+                    try {
+                        var f = feature.getProperties();
+                        html = '<strong>'+ f.nom + '</strong>';
+                        html += '</br>'+ f.adresse + ', ' + f.code_postal + ', ' + f.ville;
+                        document.getElementById('popup-content-' + map.get('target')).innerHTML = html;
+                    } catch (e) {
+                        html = "Contactez " + overlayTitle + " pour plus d'informations."
+                    }
+                }
+                document.getElementById('popup-content-' + map.get('target')).innerHTML = html;
+            }
+            
+            /**
+             * Add more UI and functions if simple option is unchecked from admin IHM
+             */
             if(!isSimpleMap) {
                 jQuery('#'+ popupId).css('display', 'none');
+                getJsonLayer(dataUrl, 'EPSG:4326', <?= $mapName ?>);
                 // feature select behavior - only one in the map
                 <?= $mapName ?>.on('click', evt => {
                     var features = [];
@@ -268,34 +301,7 @@ class MslWidget extends WP_Widget {
                         features.push(feature);
                     });
                     if(features.length) {
-                        // create overlay
-                        overlay = new ol.Overlay({
-                            element: document.getElementById('popup-' + <?= json_encode($mapName) ?>),
-                            autoPan: false,
-                            position: evt.coordinate,
-                            id: 'overlay-' + <?= json_encode($mapName) ?>
-                        });
-                        <?= $mapName ?>.addOverlay(overlay);
-                        
-                        // display popup
-                        jQuery('#'+ 'popup-' + <?= json_encode($mapName) ?>).css('display','inline-block');
-                        var html = "";
-                        // add content html
-                        if(!features[0].getProperties().adresse) {
-                            html = '<strong>'+ overlayTitle + '</strong>';
-                            html += '</br>'+ overlayText;
-                        } else {
-                            try {
-                                var f = features[0].getProperties();
-                                html = '<strong>'+ f.nom + '</strong>';
-                                html += '</br>'+ f.adresse + ', ' + f.code_postal + ', ' + f.ville;
-                                document.getElementById('popup-content-' + <?= json_encode($mapName) ?>).innerHTML = html;
-                            } catch (e) {
-                                html = "Contactez " + overlayTitle + " pour plus d'informations."
-                            }
-                        }
-                        document.getElementById('popup-content-' + <?= json_encode($mapName) ?>).innerHTML = html;
-
+                        displayPopup(features[0], <?= $mapName ?>);
                     } else {
                         // hide popup
                         if(<?= $mapName ?>.getOverlays().getArray().length) {
@@ -306,13 +312,11 @@ class MslWidget extends WP_Widget {
                     }
                 });
 
-
-
                 /**
-                * JSON READER
+                * Create layer from JSON url to read and add this layer to map
                 */
                 function getJsonLayer(jsonUrl, inSrs, map) {
-                    var layer;
+                    var layerCustomers;
                     var toSrs = map.getView().getProjection().getCode();
                     var id = 'layer-' + id;
                     var xhr = new XMLHttpRequest();
@@ -324,7 +328,7 @@ class MslWidget extends WP_Widget {
                                 var crs = response.crs.properties.name || '';
                                 var features = [];
                                 var res = new ol.format.GeoJSON().readFeatures( response );
-                                var layerId = 'json-points';
+                                var layerId = 'json-customers';
                                 
                                 if(crs != 'EPSG:3857') {
                                     res.forEach(e => {
@@ -336,10 +340,9 @@ class MslWidget extends WP_Widget {
                                 } else {
                                     features = res;
                                 }
-                                if(!getLayerById(layerId, map)) {
-                                    layer = featuresToLayer(features, layerId);
-                                    map.addLayer(layer)
-                                }
+                                layerCustomers = featuresToLayer(features, layerId);
+                                layerCustomers.setVisible(false);
+                                map.addLayer(layerCustomers);
                             }
                         }
                         else {
@@ -347,9 +350,12 @@ class MslWidget extends WP_Widget {
                         }
                     };
                     xhr.send();
-                    return layer;
+                    return layerCustomers;
                 }
 
+                /**
+                 * 
+                 */
                 function featuresToLayer(features, id) {
                     let vectorSource = new ol.source.Vector({
                         features
@@ -470,24 +476,23 @@ class MslWidget extends WP_Widget {
                                 b.innerHTML += "<input type='hidden' value='" + val + "' lonlat='" + xy + "'>";
                                 b.innerHTML += "<input type='hidden' value='" + xy + "'>";
                                 b.addEventListener("click", function(e) {
-                                    let layerId = "seearch_marker";
                                     /*insert the value for the autocomplete text field:*/
                                     inp.value = this.getElementsByTagName("input")[0].value;
                                     inp.xy = this.getElementsByTagName("input")[1].value;
                                     let center = xyStringToArray(inp.xy);
                                     center = ol.proj.fromLonLat(center);
                                     <?= $mapName ?>.getView().setCenter(center);
-                                    if(dataUrl) {
-                                        getJsonLayer(dataUrl,'EPSG:4326', <?= $mapName ?>);
-                                    }
-                                    // display data to map
-                                    var alreadyExist = getLayerById(layerId, <?= $mapName ?>);
-                                    if(alreadyExist) {
-                                        <?= $mapName ?>.removeLayer(alreadyExist);
-                                    }
-                                    addPoint(center, searchMarker, searchSize, <?= $mapName ?>, layerId);
+                                    addPoint(center, searchMarker, searchSize, <?= $mapName ?>, "search_marker");
                                     // display nearest point
-
+                                    var vector = getLayerById('json-customers',  <?= $mapName ?>);
+                                    if(vector) {
+                                        var source = getLayerById('json-customers', <?= $mapName ?>).getSource();
+                                        if(source) {
+                                            var closestFeature = source.getClosestFeatureToCoordinate(center);
+                                            displayPopup(closestFeature, <?= $mapName ?>);
+                                            vector.setVisible(true)
+                                        }
+                                    }
                                     /*close the list of autocompleted values,
                                     (or any other open lists of autocompleted values:*/
                                     closeAllLists();
