@@ -189,8 +189,8 @@ class MslWidget extends WP_Widget {
                 <?= json_encode(get_option('msl_data_png3_url'));?>];
             var types = [
                 <?= json_encode(get_option('msl_data_png1_type'));?>,
-                <?= json_encode(get_option('msl_data_png2_url'));?>,
-                <?= json_encode(get_option('msl_data_png3_url'));?>];
+                <?= json_encode(get_option('msl_data_png2_type'));?>,
+                <?= json_encode(get_option('msl_data_png3_type'));?>];
             var searchMarker = <?= json_encode(get_option('msl_marker_search_url'));?> || '';
             var searchSize = <?= json_encode(get_option('msl_marker_search_size'));?> || '';
             
