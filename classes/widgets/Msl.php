@@ -140,8 +140,8 @@ class MslWidget extends WP_Widget {
             var popupHtml = <?= json_encode($popupHtml);?>;
             var inputId = <?= json_encode($inputId);?>;
             // set values from php
-            var mapDefaultCenter = <?= json_encode(get_option('default_coordinates'));?> ||'-385579.42,6244601.85';
-            var mapDefaultZoom = <?= json_encode(get_option('default_zoom'));?> || 7;
+            var mapDefaultCenter = <?= json_encode(get_option('msl_default_coordinates'));?> ||'-385579.42,6244601.85';
+            var mapDefaultZoom = <?= json_encode(get_option('msl_default_zoom'));?> || 7;
             var isSimpleMap = <?= json_encode($isSimpleMode['msl_simple']);?> === "on";
 
             /**
@@ -175,24 +175,24 @@ class MslWidget extends WP_Widget {
             });
 
             // if advanced map we display all elements
-            var overlayText = <?= json_encode(get_option('overlay_text'));?> || '';
-            var overlayMarker = <?= json_encode(get_option('overlay_marker'));?> || '';
-            var overlaySize = <?= json_encode(get_option('overlay_marker_size'));?> || 0.8;
-            var overlayTitle = <?= json_encode(get_option('overlay_title'));?> || '';
-            var overlayHtmlContent = <?= json_encode(get_option('overlay_html'));?> || '';
-            var dataUrl = <?= json_encode(get_option('data_file_url'));?> || '';
-            var dataSize = <?= json_encode(get_option('data_size'));?> || '';
-            var openPageUrl = <?= json_encode(get_option('open_page'));?> || '';
+            var overlayText = <?= json_encode(get_option('msl_overlay_text'));?> || '';
+            var overlayMarker = <?= json_encode(get_option('msl_overlay_marker'));?> || '';
+            var overlaySize = <?= json_encode(get_option('msl_overlay_marker_size'));?> || 0.8;
+            var overlayTitle = <?= json_encode(get_option('msl_overlay_title'));?> || '';
+            var overlayHtmlContent = <?= json_encode(get_option('msl_overlay_html'));?> || '';
+            var dataUrl = <?= json_encode(get_option('msl_data_file_url'));?> || '';
+            var dataSize = <?= json_encode(get_option('msl_data_size'));?> || '';
+            var openPageUrl = <?= json_encode(get_option('msl_open_page'));?> || '';
             var img = [
-                <?= json_encode(get_option('data_png1_url'));?>,
-                <?= json_encode(get_option('data_png2_url'));?>,
-                <?= json_encode(get_option('data_png3_url'));?>];
+                <?= json_encode(get_option('msl_data_png1_url'));?>,
+                <?= json_encode(get_option('msl_data_png2_url'));?>,
+                <?= json_encode(get_option('msl_data_png3_url'));?>];
             var types = [
-                <?= json_encode(get_option('data_png1_type'));?>,
-                <?= json_encode(get_option('data_png2_type'));?>,
-                <?= json_encode(get_option('data_png3_type'));?>];
-            var searchMarker = <?= json_encode(get_option('marker_search_url'));?> || '';
-            var searchSize = <?= json_encode(get_option('marker_search_size'));?> || '';
+                <?= json_encode(get_option('msl_data_png1_type'));?>,
+                <?= json_encode(get_option('msl_msl_data_png2_url'));?>,
+                <?= json_encode(get_option('msl_msl_data_png3_url'));?>];
+            var searchMarker = <?= json_encode(get_option('msl_marker_search_url'));?> || '';
+            var searchSize = <?= json_encode(get_option('msl_marker_search_size'));?> || '';
             
             function addPoint(xy, marker, size, mapName, id) {
                 var iconFeature = new ol.Feature({
