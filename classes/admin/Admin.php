@@ -194,14 +194,14 @@ class Admin
         add_settings_field("msl_data_png1_url", __( 'Image 1', 'WP-map-store-locator' ), array($this,"msl_data_png1_url"), "msl_plugin", "data_section");
         register_setting("msl_settings", "msl_data_png1_url");
 
-        add_settings_field("msl_data_png2_type", __( 'Type 2', 'WP-map-store-locator' ), array($this,"msl_data_png2_url"), "msl_plugin", "data_section");
-        register_setting("msl_settings", "msl_data_png2_url");
+        add_settings_field("msl_data_png2_type", __( 'Type 2', 'WP-map-store-locator' ), array($this,"msl_data_png2_type"), "msl_plugin", "data_section");
+        register_setting("msl_settings", "msl_data_png2_type");
 
         add_settings_field("msl_data_png2_url", __( 'Image 2', 'WP-map-store-locator' ), array($this,"msl_data_png2_url"), "msl_plugin", "data_section");
         register_setting("msl_settings", "msl_data_png2_url");
 
-        add_settings_field("msl_data_png3_type", __( 'Type 3', 'WP-map-store-locator' ), array($this,"msl_data_png3_url"), "msl_plugin", "data_section");
-        register_setting("msl_settings", "msl_data_png3_url");
+        add_settings_field("msl_data_png3_type", __( 'Type 3', 'WP-map-store-locator' ), array($this,"msl_data_png3_type"), "msl_plugin", "data_section");
+        register_setting("msl_settings", "msl_data_png3_type");
 
         add_settings_field("msl_data_png3_url", __( 'Image 3', 'WP-map-store-locator' ), array($this,"msl_data_png3_url"), "msl_plugin", "data_section");
         register_setting("msl_settings", "msl_data_png3_url");
