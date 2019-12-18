@@ -19,6 +19,7 @@ class Admin
         add_action("admin_init", array( $this, 'view_section' ));
         add_action("admin_init", array( $this, 'overlay_section' ));
         add_action("admin_init", array( $this, 'data_section' ));
+        add_action("admin_init", array( $this, 'search_section' ));
     }
 
     /**
@@ -71,7 +72,7 @@ class Admin
         add_settings_field("default_coordinates", __( 'Coordinates', 'WP-map-store-locator' ), array($this,"def_field_coordinates"), "msl_plugin", "default_view_section");
         register_setting("msl_settings", "default_coordinates");
         // set zoom field
-        add_settings_field("default_zoom", __( 'Zoom', 'WP-map-store-locator' ), array($this,"def_field_zoom"), "msl_plugin", "default_view_section");
+        add_settings_field("default_zoom", __( 'Zoom (1 - 20)', 'WP-map-store-locator' ), array($this,"def_field_zoom"), "msl_plugin", "default_view_section");
         register_setting("msl_settings", "default_zoom");
         // url to open page
         add_settings_field("open_page",__( 'Link to open', 'WP-map-store-locator' ), array($this,"open_page"), "msl_plugin", "default_view_section");
@@ -84,6 +85,12 @@ class Admin
             <div style="border-bottom: 1px solid black;">
                 <?php echo __("Default map view options.", "WP-map-store-locator") ?>
             </div>
+            </br>
+            </br>
+            <?php echo __("Get coordinates in EPSG:3857 from ", "WP-map-store-locator") ?>
+            <a href="https://app.dogeo.fr/Projection/#/point-to-coords" target="_blank">
+                <?php echo __("Dogeo web site. ", "WP-map-store-locator") ?>
+            </a>
         <?php
     }
 
@@ -112,9 +119,6 @@ class Admin
     function overlay_section() {
         // create section
         add_settings_section("overlay_section", __("Popup options","WP-map-store-locator"), array($this,"def_section_overlay"), "msl_plugin");
-        // set overlay location coordinates
-        add_settings_field("overlay_coordinates", __("Location","WP-map-store-locator"), array($this,"def_overlay_coordinates"), "msl_plugin", "overlay_section");
-        register_setting("msl_settings", "overlay_coordinates");
         // set overlay title
         add_settings_field("overlay_title",__( 'Title', 'WP-map-store-locator' ), array($this,"def_overlay_title"), "msl_plugin", "overlay_section");
         register_setting("msl_settings", "overlay_title");
@@ -146,11 +150,7 @@ class Admin
             <input type="text" name="overlay_title" id="overlay_title" value="<?php echo get_option('overlay_title'); ?>" />
         <?php
     }
-    function def_overlay_coordinates(){
-        ?>
-            <input type="text" name="overlay_coordinates" id="overlay_coordinates" value="<?php echo get_option('overlay_coordinates'); ?>" />
-        <?php
-    }
+
     function def_overlay_text() {
         ?>
             <input type="text" name="overlay_text" id="overlay_text" value="<?php echo get_option('overlay_text'); ?>" />
@@ -185,7 +185,7 @@ class Admin
         add_settings_field("data_file_url", __( 'URL', 'WP-map-store-locator' ), array($this,"data_file_url"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_file_url");
 
-        add_settings_field("data_size", __( 'Size (0-1)', 'WP-map-store-locator' ), array($this,"data_size"), "msl_plugin", "data_section");
+        add_settings_field("data_size", __( "Marker size (0-1)", 'WP-map-store-locator' ), array($this,"data_size"), "msl_plugin", "data_section");
         register_setting("msl_settings", "data_size");
 
         add_settings_field("data_png1_type", __( 'Type 1', 'WP-map-store-locator' ), array($this,"data_png1_type"), "msl_plugin", "data_section");
@@ -213,6 +213,9 @@ class Admin
             <div style="border-bottom: 1px solid black;">
                <?php echo __("Options to display data on the map.", "WP-map-store-locator") ?>
             </div>
+            </br>
+            </br>
+            <span><?php echo __("Display data with projection ", "WP-map-store-locator") ?><a href="http://epsg.io/3857" target="_blank">EPSG:3857.</a></span>
         <?php
     }
 
@@ -261,6 +264,40 @@ class Admin
     function data_png3_type() {
         ?>
             <input type="text" name="data_png3_type" id="data_png3_type" value="<?php echo get_option('data_png3_type'); ?>" />
+        <?php
+    }
+
+    /**
+     * Data section
+     * Contain all params to display data to map
+     */
+    function search_section () {
+        add_settings_section("search_section", __("Search options", "WP-map-store-locator"), array($this,"section_search"), "msl_plugin");
+        // search icon url
+        add_settings_field("marker_search_url", __( 'Marker URL', 'WP-map-store-locator' ), array($this,"marker_search_url"), "msl_plugin", "search_section");
+        register_setting("msl_settings", "marker_search_url");
+        // search icon size
+        add_settings_field("marker_search_size", __( "Marker size (0-1)", 'WP-map-store-locator' ), array($this,"marker_search_size"), "msl_plugin", "search_section");
+        register_setting("msl_settings", "marker_search_size");
+    }    
+
+    // section description text
+    function section_search() {
+        ?>
+            <div style="border-bottom: 1px solid black;">
+               <?php echo __("Search options", "WP-map-store-locator") ?>
+            </div>
+        <?php
+    }
+    
+    function marker_search_url() {
+        ?>
+            <input type="text" name="marker_search_url" id="marker_search_url" value="<?php echo get_option('marker_search_url'); ?>" />
+        <?php
+    }
+    function marker_search_size() {
+        ?>
+            <input type="text" name="marker_search_size" id="marker_search_size" value="<?php echo get_option('marker_search_size'); ?>" />
         <?php
     }
 }
