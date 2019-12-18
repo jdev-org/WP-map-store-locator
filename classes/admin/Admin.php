@@ -108,7 +108,7 @@ class Admin
 
     function msl_open_page() {
         ?>
-            <input type="text" name="msl_open_page" id="msl_msl_data_png3_url" value="<?php echo get_option('msl_open_page'); ?>" />
+            <input type="text" name="msl_open_page" id="msl_data_png3_url" value="<?php echo get_option('msl_open_page'); ?>" />
         <?php
     }
 
@@ -194,14 +194,14 @@ class Admin
         add_settings_field("msl_data_png1_url", __( 'Image 1', 'WP-map-store-locator' ), array($this,"msl_data_png1_url"), "msl_plugin", "data_section");
         register_setting("msl_settings", "msl_data_png1_url");
 
-        add_settings_field("msl_msl_data_png2_url", __( 'Type 2', 'WP-map-store-locator' ), array($this,"msl_msl_data_png2_url"), "msl_plugin", "data_section");
-        register_setting("msl_settings", "msl_msl_data_png2_url");
+        add_settings_field("msl_data_png2_type", __( 'Type 2', 'WP-map-store-locator' ), array($this,"msl_data_png2_url"), "msl_plugin", "data_section");
+        register_setting("msl_settings", "msl_data_png2_url");
 
         add_settings_field("msl_data_png2_url", __( 'Image 2', 'WP-map-store-locator' ), array($this,"msl_data_png2_url"), "msl_plugin", "data_section");
         register_setting("msl_settings", "msl_data_png2_url");
 
-        add_settings_field("msl_msl_data_png3_url", __( 'Type 3', 'WP-map-store-locator' ), array($this,"msl_msl_data_png3_url"), "msl_plugin", "data_section");
-        register_setting("msl_settings", "msl_msl_data_png3_url");
+        add_settings_field("msl_data_png3_type", __( 'Type 3', 'WP-map-store-locator' ), array($this,"msl_data_png3_url"), "msl_plugin", "data_section");
+        register_setting("msl_settings", "msl_data_png3_url");
 
         add_settings_field("msl_data_png3_url", __( 'Image 3', 'WP-map-store-locator' ), array($this,"msl_data_png3_url"), "msl_plugin", "data_section");
         register_setting("msl_settings", "msl_data_png3_url");
@@ -255,15 +255,15 @@ class Admin
         <?php
     }
 
-    function msl_msl_data_png2_url() {
+    function msl_data_png2_type() {
         ?>
-            <input type="text" name="msl_msl_data_png2_url" id="msl_msl_data_png2_url" value="<?php echo get_option('msl_msl_data_png2_url'); ?>" />
+            <input type="text" name="msl_data_png2_type" id="msl_data_png2_type" value="<?php echo get_option('msl_data_png2_type'); ?>" />
         <?php
     }
     
-    function msl_msl_data_png3_url() {
+    function msl_data_png3_type() {
         ?>
-            <input type="text" name="msl_msl_data_png3_url" id="msl_msl_data_png3_url" value="<?php echo get_option('msl_msl_data_png3_url'); ?>" />
+            <input type="text" name="msl_data_png3_type" id="msl_data_png3_type" value="<?php echo get_option('msl_data_png3_type'); ?>" />
         <?php
     }
 
