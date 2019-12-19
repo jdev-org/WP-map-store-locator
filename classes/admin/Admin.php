@@ -9,6 +9,7 @@ class Admin
 
     public function __construct() {
         $this->plugin_path= plugin_dir_url( dirname( __FILE__ ) );
+        print_r(plugins_url());
     }
 
     /**
@@ -223,6 +224,16 @@ class Admin
     function msl_data_file_url() {
         ?>
             <input type="text" name="msl_data_file_url" id="msl_data_file_url" value="<?php echo get_option('msl_data_file_url'); ?>" />
+            
+            <span>
+                </br>
+                </br>
+                <a 
+                    href="<?php echo plugins_url() . '/WP-map-store-locator/assets/data/clients.json'?>" 
+                    target="_blank">
+                    <?php echo __('Check the template file.', 'WP-map-store-locator') ?>
+                </a>
+            </span>
         <?php
     }
 

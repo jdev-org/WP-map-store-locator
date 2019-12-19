@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WP-map-store-locator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-19 11:16+0000\n"
-"PO-Revision-Date: 2019-12-19 11:16+0000\n"
+"POT-Creation-Date: 2019-12-19 11:33+0000\n"
+"PO-Revision-Date: 2019-12-19 11:34+0000\n"
 "Last-Translator: jdev <gaetan.bruel@jdev.fr>\n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
@@ -14,121 +14,125 @@ msgstr ""
 "X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.3.1; wp-5.3.2"
 
-#: classes/admin/Admin.php:31 classes/widgets/Msl.php:21
+#: classes/admin/Admin.php:32 classes/widgets/Msl.php:21
 msgid "Map Store Locator"
 msgstr "Map Store Locator"
 
-#: classes/admin/Admin.php:56
+#: classes/admin/Admin.php:57
 msgid "Save"
 msgstr "Enregistrer"
 
-#: classes/admin/Admin.php:70
+#: classes/admin/Admin.php:71
 msgid "Map options"
 msgstr "Options de la carte"
 
-#: classes/admin/Admin.php:72
+#: classes/admin/Admin.php:73
 msgid "Coordinates"
 msgstr "Coordonnées"
 
-#: classes/admin/Admin.php:75
+#: classes/admin/Admin.php:76
 msgid "Zoom (1 - 20)"
 msgstr "Zoom (valeur de 1 à 20)"
 
-#: classes/admin/Admin.php:78
+#: classes/admin/Admin.php:79
 msgid "Link to open"
 msgstr "Page à consulter"
 
-#: classes/admin/Admin.php:86
+#: classes/admin/Admin.php:87
 msgid "Default map view options."
 msgstr "Options d'affichage de la carte à l'ouverture."
 
-#: classes/admin/Admin.php:89
+#: classes/admin/Admin.php:90
 msgid "Get coordinates in EPSG:3857 (lon, lat) from "
 msgstr "Obtenez les coordonnées en EPSG:3857 (lon, lat) depuis le site"
 
-#: classes/admin/Admin.php:91
+#: classes/admin/Admin.php:92
 msgid "Dogeo web site. "
 msgstr " internet Dogeo"
 
-#: classes/admin/Admin.php:120
+#: classes/admin/Admin.php:121
 msgid "Popup options"
 msgstr "Options d'affichage de l'infobulle"
 
-#: classes/admin/Admin.php:122
+#: classes/admin/Admin.php:123
 msgid "Title"
 msgstr "Titre"
 
-#: classes/admin/Admin.php:125
+#: classes/admin/Admin.php:126
 msgid "Text"
 msgstr "Description"
 
-#: classes/admin/Admin.php:128
+#: classes/admin/Admin.php:129
 msgid "Marker Icon"
 msgstr "Pictogramme"
 
-#: classes/admin/Admin.php:131 classes/admin/Admin.php:187
-#: classes/admin/Admin.php:302
+#: classes/admin/Admin.php:132 classes/admin/Admin.php:188
+#: classes/admin/Admin.php:313
 msgid "Marker size (0-1)"
 msgstr "Taille du pictogramme (0-1)"
 
-#: classes/admin/Admin.php:134
+#: classes/admin/Admin.php:135
 msgid "HTML content"
 msgstr "Contenu HTML"
 
-#: classes/admin/Admin.php:142
+#: classes/admin/Admin.php:143
 msgid "Default popup options."
 msgstr "Options d'affichage de l'infobulle par défaut."
 
-#: classes/admin/Admin.php:182
+#: classes/admin/Admin.php:183
 msgid "Data options"
 msgstr "Options du jeu de données"
 
-#: classes/admin/Admin.php:184
+#: classes/admin/Admin.php:185
 msgid "URL"
 msgstr "URL"
 
-#: classes/admin/Admin.php:190
+#: classes/admin/Admin.php:191
 msgid "Type 1"
 msgstr "Type 1"
 
-#: classes/admin/Admin.php:193
+#: classes/admin/Admin.php:194
 msgid "Image 1"
 msgstr "Symbole 1"
 
-#: classes/admin/Admin.php:196
+#: classes/admin/Admin.php:197
 msgid "Type 2"
 msgstr "Type 2"
 
-#: classes/admin/Admin.php:199
+#: classes/admin/Admin.php:200
 msgid "Image 2"
 msgstr "Symbole 2"
 
-#: classes/admin/Admin.php:202
+#: classes/admin/Admin.php:203
 msgid "Type 3"
 msgstr "Type 3"
 
-#: classes/admin/Admin.php:205
+#: classes/admin/Admin.php:206
 msgid "Image 3"
 msgstr "Symbole 3"
 
-#: classes/admin/Admin.php:213
+#: classes/admin/Admin.php:214
 msgid "Options to display data on the map."
 msgstr "Options par défaut d'affichage des données sur la carte"
 
-#: classes/admin/Admin.php:216
+#: classes/admin/Admin.php:217
 msgid "Display data with projection "
 msgstr "Vous devez afficher les données dans la projection "
 
-#: classes/admin/Admin.php:219 classes/admin/Admin.php:313
+#: classes/admin/Admin.php:220 classes/admin/Admin.php:324
 msgid "Please, use SVG or PNG as icons."
 msgstr ""
 "Merci d'utiliser des liens vers les formats SVG et PNG pour les symboles."
 
-#: classes/admin/Admin.php:297 classes/admin/Admin.php:310
+#: classes/admin/Admin.php:234
+msgid "Check the template file."
+msgstr "Fichier d'exemple à respecter."
+
+#: classes/admin/Admin.php:308 classes/admin/Admin.php:321
 msgid "Search options"
 msgstr "Options de la barre de recherche"
 
-#: classes/admin/Admin.php:299
+#: classes/admin/Admin.php:310
 msgid "Marker URL"
 msgstr "URL de l'icône"
 
@@ -172,5 +176,5 @@ msgid "JDev"
 msgstr "JDev"
 
 #. Author URI of the plugin
-msgid "https://jdev.Fr"
-msgstr ""
+msgid "https://jdev.fr"
+msgstr "https://jdev.fr"

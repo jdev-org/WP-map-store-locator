@@ -1,0 +1,23 @@
+{
+"type": "FeatureCollection",
+"name": "clients",
+"crs": { "type": "name", "properties": { "name": "EPSG:3857" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 0, "adresse": "Rue poullain duparc", "ville": "rennes", "code_postal": "35000", "nom": "barex'po", "code_categorie": "CHR" }, "geometry": { "type": "Point", "coordinates": [ -186950.109477433376014, 6124954.41759218275547 ] } },
+{ "type": "Feature", "properties": { "id": 1, "adresse": "Rue de l'hermine", "ville": "RENNES", "code_postal": "35000", "nom": "La Clara", "code_categorie": "CHR" }, "geometry": { "type": "Point", "coordinates": [ -187012.482130431832047, 6125478.661881568841636 ] } },
+{ "type": "Feature", "properties": { "id": 2, "adresse": "49 Avenue Jean Janvier", "ville": "RENNES", "code_postal": "35000", "nom": "Les caves Joseph", "code_categorie": "DET" }, "geometry": { "type": "Point", "coordinates": [ -186186.793806412897538, 6124386.069985220208764 ] } },
+{ "type": "Feature", "properties": { "id": 4, "adresse": "12 Rue Jacques Coeur", "ville": "PARIS", "code_postal": "75004", "nom": "Les Caprices de l'instant", "code_categorie": "DET" }, "geometry": { "type": "Point", "coordinates": [ 263564.779911605583038, 6249964.771682108752429 ] } },
+{ "type": "Feature", "properties": { "id": 3, "adresse": "91 Rue Saint Antoine", "ville": "Paris", "code_postal": "75004", "nom": "Nicolas Saint Paul", "code_categorie": "DET" }, "geometry": { "type": "Point", "coordinates": [ 262956.753591757500544, 6250244.806339278817177 ] } },
+{ "type": "Feature", "properties": { "id": 6, "adresse": "117 rue de la tuile", "ville": "Caen", "code_postal": "14000", "nom": "Au bon verre", "code_categorie": "DET" }, "geometry": { "type": "Point", "coordinates": [ -35833.660065605050477, 6304119.64923657104373 ] } },
+{ "type": "Feature", "properties": { "id": 7, "adresse": "18 Rue Auge", "ville": "Caen", "code_postal": "14500", "nom": "Les auges pleines", "code_categorie": "CHR" }, "geometry": { "type": "Point", "coordinates": [ -37779.344289118649613, 6304562.680620797909796 ] } },
+{ "type": "Feature", "properties": { "id": 8, "adresse": "9 rue de saxe", "ville": "lyon", "code_postal": "69100", "nom": "Le tout plein", "code_categorie": "CHR" }, "geometry": { "type": "Point", "coordinates": [ 543445.86048006080091, 5739231.797677502967417 ] } },
+{ "type": "Feature", "properties": { "id": 9, "adresse": "45 rue du marnier", "ville": "Lyon", "code_postal": "69100", "nom": "La belle heure", "code_categorie": "DET" }, "geometry": { "type": "Point", "coordinates": [ 538440.062571678427048, 5741972.197992310859263 ] } },
+{ "type": "Feature", "properties": { "id": 10, "adresse": "5 station essence", "ville": "Meyzieu", "code_postal": "69100", "nom": "L'autoroutier", "code_categorie": "CHR" }, "geometry": { "type": "Point", "coordinates": [ 548597.813071899581701, 5747928.001343159936368 ] } },
+{ "type": "Feature", "properties": { "id": 11, "adresse": "8 La petite rue", "ville": "Bordeau", "code_postal": "33000", "nom": "L'assiette", "code_categorie": "CHR" }, "geometry": { "type": "Point", "coordinates": [ -67882.641747284054873, 5593296.346246263943613 ] } },
+{ "type": "Feature", "properties": { "id": 12, "adresse": "La plage du fond", "ville": "Archacon", "code_postal": "33120", "nom": "L'arc a Chon", "code_categorie": "CHR" }, "geometry": { "type": "Point", "coordinates": [ -130875.310317001465592, 5567573.121957933530211 ] } },
+{ "type": "Feature", "properties": { "id": 13, "adresse": "Le centre", "ville": "Orlean", "code_postal": "45000", "nom": "Le petit bouchon", "code_categorie": "DET" }, "geometry": { "type": "Point", "coordinates": [ 213465.123906327760778, 6091099.198098831810057 ] } },
+{ "type": "Feature", "properties": { "id": 14, "adresse": "Le port", "ville": "Marseille", "code_postal": "13000", "nom": "Le 51", "code_categorie": "CHR" }, "geometry": { "type": "Point", "coordinates": [ 598144.250763627700508, 5361495.018284377641976 ] } },
+{ "type": "Feature", "properties": { "id": 15, "adresse": "Place de l'église", "ville": "Toulouse", "code_postal": "31000", "nom": "Pour un cassoulet", "code_categorie": "CHR" }, "geometry": { "type": "Point", "coordinates": [ 158510.962926713516936, 5403587.567119826562703 ] } },
+{ "type": "Feature", "properties": { "id": 16, "adresse": "Av. du pont devant", "ville": "Starsbourg", "code_postal": "67000", "nom": "L'inconnu", "code_categorie": "DET" }, "geometry": { "type": "Point", "coordinates": [ 676483.161096269264817, 6261807.868375930003822 ] } }
+]
+}
