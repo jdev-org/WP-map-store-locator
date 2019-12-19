@@ -11,11 +11,16 @@ class MslPlugin
     
     public $plugin;
     
+    /**
+     * Constructor
+     */
     function __construct() {
         $this->plugin = plugin_basename( __FILE__ );
     }
     
-    // trigger with class init
+    /**
+     * Call to register and init plugin.
+     */
     function register() {
         load_plugin_textdomain( 'WP-map-store-locator', false, 'WP-map-store-locator/languages/' );
         // add admin page
@@ -25,16 +30,25 @@ class MslPlugin
         $this->activateWidgets();
     }
 
+    /**
+     * When plugin is activate.
+     */
 	function activate() {
 		// flush rewrite rules
 		flush_rewrite_rules();
 	}
 
+    /**
+     * When plugin is seactivate.
+     */
 	function deactivate() {
 		// flush rewrite rules
 		flush_rewrite_rules();
     }
 
+    /**
+     * Activate widgets.
+     */
     function activateWidgets() {
         $msl_widget = new MslWidget();
         $msl_widget->register();

@@ -1,20 +1,19 @@
 <?php
-/*
-Plugin Name: Map Store Location
 
-Description: A plugin to display geographic data in a map.
-Version: 1.0.0
-Author: JDev
-License: GPLv3 or later
-Domain Path: /languages
-Text Domain: WP-map-store-locator
-*/
-// map store locator class
+/**
+ * Main and uniq widget fot MSL plugin.
+ */
+
 class MslWidget extends WP_Widget {
+    /**
+     * To know if map html page was already loaded
+     * Fix and avoid openLayers lib dupplication errors.
+     */
     public $isMapReady;
-    public $isSimpleMap;
-    private $instanceWidget;
-    // constructor
+    
+    /**
+     * Constructor
+     */
     function __construct() {
         parent::__construct(
             'msl',
@@ -22,30 +21,49 @@ class MslWidget extends WP_Widget {
             array( 'description' => __( 'A plugin to display geographic data in a map.', 'WP-map-store-locator' ))
         );
     }
+
+    /**
+     * Call to register and init this widget.
+     */
     function register() {
         add_action('widgets_init', array( $this, 'widgetInit' ) );        
         add_action('init', array($this, 'load_scripts'));
         add_shortcode('msl',array($this,'displayWidget'));
     }
 
-    
+    /**
+     * Call by shortcode.
+     * Get attributes from shortcode and call map to display into article, page, etc.
+     */
     function displayWidget($atts = [], $content = null, $tag = ''){
         $isSimpleMap;
         if (isset($atts['map'])) {
             $isSimpleMap = $atts['map'] === 'simple' ? 'on' : 'off';
         }
-        return $this->initHTML(array('msl_simple' => $isSimpleMap, 'msl_height' => $atts['height'], 'msl_width' => $atts['width']));
+        $this->initHTML(array('msl_simple' => $isSimpleMap, 'msl_height' => $atts['height'], 'msl_width' => $atts['width']));
     }
-     
+
+    /**
+     * Init jQuery
+     */
     function load_scripts() {
         wp_enqueue_script('jquery');
     }
 
+    /**
+     * Init widget
+     * - not optional
+     * - use by Wordpress
+     */
     function widgetInit() {
         register_widget( $this );
     }
 
-    // display and layout
+    /**
+     * Create widget
+     * - not optional
+     * - use by Wordpress
+     */
     public function widget( $args, $instance ) {
         extract($args);
         // HTML before widget
@@ -55,20 +73,31 @@ class MslWidget extends WP_Widget {
         echo $after_widget;
     }  
 
+    /**
+     * Usefull to control or changes some values save by widget admin UI.
+     * - use by Wordpress
+     */
     function update($new_values, $old_values) {
-        // keep values to compare or, and modify between old and news
         return $new_values;
     }
+
+    /**
+     * Usefull to create and display widget admin UI.
+     * - Use by Wordpress
+     */
     function form($instance) {
         ?>
+            <!--Checkbox to set if map will be display with data and search input or as a simple map (baselayer and main marker to localize owner) -->
             <p>
                 <input class="checkbox" type="checkbox" <?php checked( $instance[ 'msl_simple' ], 'on' ); ?> id="<?php echo $this->get_field_id( 'msl_simple' ); ?>" name="<?php echo $this->get_field_name( 'msl_simple' ); ?>" /> 
                 <label for="<?php echo $this->get_field_id( 'msl_simple' ); ?>"><?php echo __( 'Simple map', 'WP-map-store-locator' ) ?></label>
-            </p>        
+            </p>
+            <!--Text field to set map height (px, em, %). Ex: 500px default on : 12em.-->
             <p>
                 <label for="<?php echo $this->get_field_id("msl_height"); ?>"><?php echo __( 'Height (px, em, %)', 'WP-map-store-locator' ) ?></label>
                 <input value="<?php echo $instance["msl_height"]; ?>" placeholder="<?php echo __( 'Height', 'WP-map-store-locator' ) ?>" type="text" name="<?php echo $this->get_field_name("msl_height"); ?>" id="<?php echo $this->get_field_id("msl_height"); ?>"/>
             </p>
+            <!--Text field to set map width (px, em, %). Ex: 50%. Default on : auto.-->
             <p>
                 <label for="<?php echo $this->get_field_id("msl_width"); ?>"><?php echo __( 'Width (px, em, %)', 'WP-map-store-locator' ) ?> </label>
                 <input value="<?php echo $instance["msl_width"]; ?>" placeholder="<?php echo __( 'Width', 'WP-map-store-locator' ) ?>" type="text" name="<?php echo $this->get_field_name("msl_width"); ?>" id="<?php echo $this->get_field_id("msl_width"); ?>"/>
@@ -78,7 +107,8 @@ class MslWidget extends WP_Widget {
 
 
     /**
-     * Create map or load html page if not loaded
+     * Init map core and load libraries. If already loaded, map is ready and next widgets directly create map.
+     * Fix wrong behavior and dupplicate openLayers type errors.
      */
     function initHTML($instance) {
         if($this->isMapReady) {
@@ -110,6 +140,7 @@ class MslWidget extends WP_Widget {
 
     /**
      * Create map if openLayers and others lib are loaded
+     * @param - array isSimpleMode
      */
     function createMap($isSimpleMode) {
         $this->ID = uniqid();
@@ -118,16 +149,18 @@ class MslWidget extends WP_Widget {
         $popupHtml = "popup-content-" . $mapName;
         $inputId =  "search-" . $mapName;
         ?>
-            <!--Make sure the form has the autocomplete function switched off:-->
+            <!--Search input with autocompletion-->
             <div class="autocomplete">
                 <input class="input-search input-text" id=<?= $inputId ?> type="text" name="nominatim" placeholder=" <?= __('Place, address, city, ...', 'WP-map-store-locator');?>">
             </div>
+            <!--OpenLayers map div-->
             <div id=<?= $mapName ?>
                 style="
                     height:<?= $isSimpleMode['msl_height'] ? $isSimpleMode['msl_height'] .';': '15em;' ;?>
                     width:<?= $isSimpleMode['msl_width'] ? $isSimpleMode['msl_width'] . ';' : '100%;' ;?>
                     ">
             </div>
+            <!--Popup. Will be transform as openLayers Overlay and move to map div-->
             <div id=<?= $popupId ?> class="ol-popup">
                 <div id=<?= $popupHtml ?>></div>
             </div>
@@ -139,42 +172,11 @@ class MslWidget extends WP_Widget {
             var popupId =  <?= json_encode($popupId);?>;
             var popupHtml = <?= json_encode($popupHtml);?>;
             var inputId = <?= json_encode($inputId);?>;
-            // set values from php
+            
+            // set values from php 'options' table.
             var mapDefaultCenter = <?= json_encode(get_option('msl_default_coordinates'));?> ||'-385579.42,6244601.85';
             var mapDefaultZoom = <?= json_encode(get_option('msl_default_zoom'));?> || 7;
             var isSimpleMap = <?= json_encode($isSimpleMode['msl_simple']);?> === "on";
-
-            /**
-            * Convert string coordinates to real array
-            */
-            function xyStringToArray(val) {
-                let arrXY;
-                if(val.replace(/\s/g, '').length > 0) {
-                    let splitCenter = val.split(',');
-                    let x = parseFloat(splitCenter[0]);
-                    let y = parseFloat(splitCenter[1]);
-                    arrXY = [x,y];
-                    return  arrXY;
-                }
-            }
-            // icon and style
-            mapDefaultCenter = xyStringToArray(mapDefaultCenter);
-
-            var <?= $mapName ?> = new ol.Map({
-                target: <?= json_encode($mapName);?>,
-                layers: [
-                    new ol.layer.Tile({
-                        source: new ol.source.OSM()
-                    })
-                ],
-                view: new ol.View({
-                    center: mapDefaultCenter,
-                    zoom: mapDefaultZoom,
-                    projection: 'EPSG:3857'
-                })
-            });
-
-            // if advanced map we display all elements
             var overlayText = <?= json_encode(get_option('msl_overlay_text'));?> || '';
             var overlayMarker = <?= json_encode(get_option('msl_overlay_marker'));?> || '';
             var overlaySize = <?= json_encode(get_option('msl_overlay_marker_size'));?> || 0.8;
@@ -192,14 +194,63 @@ class MslWidget extends WP_Widget {
                 <?= json_encode(get_option('msl_data_png2_type'));?>,
                 <?= json_encode(get_option('msl_data_png3_type'));?>];
             var searchMarker = <?= json_encode(get_option('msl_marker_search_url'));?> || '';
-            var searchSize = <?= json_encode(get_option('msl_marker_search_size'));?> || '';
+            var searchSize = <?= json_encode(get_option('msl_marker_search_size'));?> || '';            
+
+            /**
+            * Convert string coordinates to real array
+            * @param val - string to array
+            * return coordinate array readable by openLayers
+            */
+            function xyStringToArray(val) {
+                let arrXY;
+                if(val.replace(/\s/g, '').length > 0) {
+                    let splitCenter = val.split(',');
+                    let x = parseFloat(splitCenter[0]);
+                    let y = parseFloat(splitCenter[1]);
+                    arrXY = [x,y];
+                    return  arrXY;
+                }
+            }
+
+            /**
+            * Get default center set as string to array.
+            */
+            mapDefaultCenter = xyStringToArray(mapDefaultCenter);
+
+            /**
+            * Create openLayers Map.
+            * <?= $mapName ?> allow to create many maps without ids clonficts.
+            */
+            var <?= $mapName ?> = new ol.Map({
+                target: <?= json_encode($mapName);?>,
+                layers: [
+                    new ol.layer.Tile({
+                        source: new ol.source.OSM()
+                    })
+                ],
+                view: new ol.View({
+                    center: mapDefaultCenter,
+                    zoom: mapDefaultZoom,
+                    projection: 'EPSG:3857'
+                })
+            });
             
+            /**
+            * Add a point to a map.
+            * Point could be search marker or default owner marker.
+            * @param xy - array as coordinates
+            * @param marker - string url to get marker
+            * @param size - number openLayers scale attribute
+            * @param mapName - openLayers map object as target
+            * @param id - string uniq id
+            */
             function addPoint(xy, marker, size, mapName, id) {
+                // create point feature
                 var iconFeature = new ol.Feature({
                     geometry: new ol.geom.Point(xy),
                 });
-                iconFeature.setId(id);
                 if (marker ) { // avoid empty style and no ol.style.icon assertion error
+                    // create style
                     var iconStyle = new ol.style.Style({
                         image: new ol.style.Icon({
                             anchor: [0.3, 40],
@@ -209,12 +260,13 @@ class MslWidget extends WP_Widget {
                             scale: size
                         })
                     });
-                
+                    // set style
                     iconFeature.setStyle(iconStyle);
-                    // create and add layers
+                    // remove layer if already exist
                     if(getLayerById(id, mapName)) {
                         mapName.removeLayer(id);
                     }
+                    // create layer with uniq id
                     var layer = new ol.layer.Vector({
                         source: new ol.source.Vector({
                             features: [
@@ -224,20 +276,19 @@ class MslWidget extends WP_Widget {
                         id: id
                     });
                     // add marker to map
-                    if(mapName) {
-                        mapName.addLayer(layer);
-                    } else {
-                        <?= $mapName ?>.addLayer(layer);
-                    }
-                }                
+                    mapName.addLayer(layer);
+                }
             }
-
+            
+            // create home point to represent owner or main producer, etc.
             addPoint(mapDefaultCenter, overlayMarker, overlaySize, <?= $mapName ?>, 'home-feature');
 
             /**
-             * Return layer if alrady exist or false
-             */
-            
+             * Return layer if already exist or return false
+             * @param id - string uniq layer id to search
+             * @param map - openLayers map object as target
+             * return false if not find or openLayers layer map object if exist.
+             */            
             function getLayerById(id, map) {
                 var find = false;
                 map.getLayers().forEach(e => {
@@ -247,18 +298,30 @@ class MslWidget extends WP_Widget {
                 });
                 return find;
             }
-
+            
+            /**
+            * Function to generate the full process to destroy, create and set map overlay.
+            * This avoid wrong popup behavior and map id's conflict when popup is display into a bad map.
+            * @param feature - ol.feature object to get id. This id was set by addPoint function.
+            * @param map - target this ol.map object to display popup.
+            */
             function displayPopup(feature, map) {
+                var html = "";
+                var contactMsg = "<?php echo __('Please, contact ', 'WP-map-store-locator')?>" + overlayTitle + "<?php echo __(' to get more details.', 'WP-map-store-locator')?>";
                 if(feature.id_ === 'search_marker') {
+                    // never display popup on search marker without properties.
+                    // avoid to display "undefined" values into popup.
                     return;
                 }
-                // remove old popup if exist
+                /* remove and destroy others overlay. We just need only 
+                * one overlay by map that will be update.
+                */
                 jQuery('#'+ popupId).css('display', 'none');
                 if(map.getOverlays().getArray().length) {
                     map.getOverlays().getArray()[0].setPosition(undefined);
                     map.getOverlays().getArray().splice(0, map.getOverlays().getArray().length);
                 }
-                // create overlay
+                // create and add overlay to map
                 var overlay = new ol.Overlay({
                     element: document.getElementById('popup-' + map.get('target')),
                     autoPan: false,
@@ -266,12 +329,11 @@ class MslWidget extends WP_Widget {
                     id: 'overlay-' + map.get('target')
                 });
                 map.addOverlay(overlay);
-                
-                // display popup
+                // display popup initially hidden
                 jQuery('#'+ 'popup-' + map.get('target')).css('display','inline-block');
-                var html = "";
                 // add content html
                 if(feature.id_ === 'home-feature') {
+                    // display some content if marker is the owner or default retailer marker
                     if(overlayHtmlContent.length > 0) {
                         html = overlayHtmlContent;
                     } else if (overlayTitle.length && overlayText.length) {
@@ -279,40 +341,50 @@ class MslWidget extends WP_Widget {
                         html += '</br>'+ overlayText;
                     }
                 } else {
+                    // else it's a json data feature, we display specific properties.
                     try {
                         var f = feature.getProperties();
                         html = '<strong>'+ f.nom + '</strong>';
                         html += '</br>'+ f.adresse + ', ' + f.code_postal + ', ' + f.ville;
                         document.getElementById('popup-content-' + map.get('target')).innerHTML = html;
                     } catch (e) {
-                        html = "Contactez " + overlayTitle + " pour plus d'informations.";
+                        // display contact message
+                        html = contactMsg;
                     }
                 }
                 if(html.length < 1) {
-                    html = "Contactez " + overlayTitle + " pour plus d'informations.";
+                    // display contact message
+                    html = contactMsg;
                 }
                 document.getElementById('popup-content-' + map.get('target')).innerHTML = html;
             }
             
             /**
              * Add more UI and functions if simple option is unchecked from admin IHM
+             * From shortcode, map='simple' need to be not write.
              */
             if(!isSimpleMap) {
+                // display popup
                 jQuery('#'+ popupId).css('display', 'none');
+                // pre load data from JSON or GeoJSON file
                 getJsonLayer(dataUrl, 'EPSG:4326', <?= $mapName ?>);
-                // feature select behavior - only one in the map
+                // feature select behavior - only one event by map
                 <?= $mapName ?>.on('click', evt => {
                     var features = [];
                     var overlay;
+                    // get features under click coordinates
                     <?= $mapName ?>.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
                         features.push(feature);
                     });
                     if(features.length) {
+                        // display popup for the first popup only
                         displayPopup(features[0], <?= $mapName ?>);
                     } else {
-                        // hide popup
+                        // hide popup if no features was find. Allow to hide popup on simple map click.
                         if(<?= $mapName ?>.getOverlays().getArray().length) {
+                            // hide popup
                             jQuery('#'+ popupId).css('display', 'none');
+                            // force destroy all map overlay - fix wrong behavior
                             <?= $mapName ?>.getOverlays().getArray()[0].setPosition(undefined);
                             <?= $mapName ?>.getOverlays().getArray().splice(0, <?= $mapName ?>.getOverlays().getArray().length);
                         }
@@ -320,7 +392,11 @@ class MslWidget extends WP_Widget {
                 });
 
                 /**
-                * Create layer from JSON url to read and add this layer to map
+                * Create layer from JSON url and akjax request. Add this layer to map.
+                * @param jsonUrl - string to add layer to map from files URL.
+                * @param inSrs - string to know incoming srs - not display as UI. Need to be EPSG:4326 for now.
+                * @param map - map as target and avoir to display data on the wrong map.
+                * @return openLayers ol.layer.vector object
                 */
                 function getJsonLayer(jsonUrl, inSrs, map) {
                     var layerCustomers;
@@ -361,7 +437,10 @@ class MslWidget extends WP_Widget {
                 }
 
                 /**
-                 * 
+                 * Create vector source and layer. And insert given features.
+                 * @param features - objects reads as ol.feature from JSON, GeoJSON file.
+                 * @param id - string as uniq id.
+                 * @return ol.layer.vector object.
                  */
                 function featuresToLayer(features, id) {
                     let vectorSource = new ol.source.Vector({
@@ -376,8 +455,10 @@ class MslWidget extends WP_Widget {
                 }
 
                 /**
-                    Create style to categorize data by type
-                 */
+                *  Create style to categorize data by type.
+                * @param - ol.feature object
+                * @return ol.style.Style object.
+                */
                 function getStyle(feature) {
                     var style;
                     var cat = feature.get('code_categorie');
@@ -395,8 +476,9 @@ class MslWidget extends WP_Widget {
                 }
 
                 /**
-                    Autocomplete element behavior
-                 */
+                * Create autocompletion behavior and HTML UI.
+                * @param inp - input DOM element targeted
+                */
                 function autocomplete(inp) {
                     /*the autocomplete function takes two arguments,
                     the text field element and an array of possible autocompleted values:*/
@@ -417,8 +499,9 @@ class MslWidget extends WP_Widget {
                         /*Call API and display responses*/
                         search(val, a);
                     });
+                    
                     /**
-                        Execute a function presses a key on the keyboard:
+                    * Execute a function presses a key on the keyboard:
                     */
                     inp.addEventListener("keydown", function(e) {
                         var x = document.getElementById(this.id + "autocomplete-list");
@@ -446,12 +529,16 @@ class MslWidget extends WP_Widget {
                     });
 
                     /*
-                    * Create div to append results
+                    * Create div to append and display each results
+                    * @param results - json parsed from ajax request response
+                    * @param parent- DOM parent
                     */
                     function displayList(results, parent) {
                         var b;
                         var options = [];
+                        // parse results
                         results.forEach(e => {
+                            // create div for each
                             b = document.createElement("DIV");
                             var xy =  e.lon + ',' + e.lat;
                             var val = '';
@@ -462,6 +549,7 @@ class MslWidget extends WP_Widget {
                                     add.push(el);
                                 }
                             }
+                            // create string content according to nominatim returns
                             if( (place.county  || place.city  || place.village) && place.country) {
                                 if(place.road) {
                                     addToArray(place.road);
@@ -477,6 +565,7 @@ class MslWidget extends WP_Widget {
                                 val = place.state + ', ' + place.country; 
                             }
                             val = add.join(', ');
+                            // set content
                             if(xy && val && options.indexOf(val) < 0) {
                                 options.push(val);
                                 b.innerHTML = "<span>" + val + "</span>";
@@ -504,16 +593,20 @@ class MslWidget extends WP_Widget {
                                     (or any other open lists of autocompleted values:*/
                                     closeAllLists();
                                 });
+                                // append child input to result div
                                 parent.appendChild(b);            
                             }
                         });
                     }
 
                     /**
-                        Behavior when user input letters
-                     */
+                    * Behavior when user input letters. Call Nominatim api and get coordinates for the input text if exist.
+                    * @param value - string from user letters input.
+                    * @param parent - DOM input element as parent.
+                    */
                     function search(value, parent) {
                         if(value &&value.length > 3) {
+                            // Ajax request
                             var xhr = new XMLHttpRequest();
                             xhr.open('GET', 'https://nominatim.openstreetmap.org/search?q='+ value + '&format=json&addressdetails=1&limit=5');
                             xhr.onload = function() {
@@ -531,8 +624,8 @@ class MslWidget extends WP_Widget {
                         }
                     }
                     /**
-                        A function to classify an item as "active":
-                     */
+                    * A function to classify an item as "active":
+                    */
                     function addActive(x) {
                         if (!x) return false;
                         /*start by removing the "active" class on all items:*/
@@ -543,16 +636,16 @@ class MslWidget extends WP_Widget {
                         x[currentFocus].classList.add("autocomplete-active");
                     }
                     /**
-                        a function to remove the "active" class from all autocomplete items:
-                     */
+                    * A function to remove the "active" class from all autocomplete items:
+                    */
                     function removeActive(x) {
                         for (var i = 0; i < x.length; i++) {
                         x[i].classList.remove("autocomplete-active");
                         }
                     }
                     /**
-                        close all autocomplete lists in the document
-                     */
+                    * Close all autocomplete lists in the document
+                    */
                     function closeAllLists(elmnt) {
                         /*except the one passed as an argument:*/
                         var x = document.getElementsByClassName("autocomplete-items");
@@ -563,7 +656,7 @@ class MslWidget extends WP_Widget {
                         }
                     }
                     /**
-                        execute a function when someone clicks in the document:
+                    * Execute a function when someone clicks in the document:
                     */
                     document.addEventListener("click", function (e) {
                         closeAllLists(e.target);
@@ -572,10 +665,11 @@ class MslWidget extends WP_Widget {
                 autocomplete(document.getElementById("<?= $inputId ?>"));
 
             } else {
-                jQuery('#'+ popupId).remove();
-                jQuery('#'+ "<?= $inputId ?>").remove();
+                // simple map is required
+                jQuery('#'+ popupId).remove(); // Hide popup
+                jQuery('#'+ "<?= $inputId ?>").remove(); // Remove input search
                 <?= $mapName ?>.on('click', evt => {
-                    // open contact page
+                    // Open contact page
                     if(openPageUrl) {
                         window.open(openPageUrl);
                     }                    

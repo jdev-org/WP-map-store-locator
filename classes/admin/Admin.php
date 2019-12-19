@@ -5,15 +5,15 @@
 
 class Admin
 {
-    public $options = array();
-
+    /**
+     * Constructor
+     */
     public function __construct() {
         $this->plugin_path= plugin_dir_url( dirname( __FILE__ ) );
-        print_r(plugins_url());
     }
 
     /**
-     * Register method as init
+     * Hook : Register methods on init to create sections and display UIs.
      */
 	public function register() {       
         add_action("admin_menu", array( $this, 'add_new_menu_items' ));
@@ -24,7 +24,7 @@ class Admin
     }
 
     /**
-     * Define admin main page
+     * Create admin page for this plugin.
      */
     public function add_new_menu_items() {
         add_menu_page(
@@ -39,7 +39,8 @@ class Admin
         );
     }
     /**
-     * Front page
+     * Main plugins admin page
+     * Call and contain each section and others UIs.
      */
     public function admin_page(){
         ?>
@@ -65,6 +66,7 @@ class Admin
     /**
      * View section
      * View is link to map and define default map view options
+     * Register connect UI to Wordpress database.
      */
     function view_section() {
         // create section
@@ -115,6 +117,7 @@ class Admin
     /**
      * Overlay section
      * contain owner main store, warehouse or headquarter description
+     * Register connect UI to Wordpress database.
      */
     function overlay_section() {
         // create section
@@ -145,6 +148,9 @@ class Admin
         <?php
     }
 
+    /**
+     * Functions to create input interface as HTML
+     */
     function def_msl_overlay_title(){
         ?>
             <input type="text" name="msl_overlay_title" id="msl_overlay_title" value="<?php echo get_option('msl_overlay_title'); ?>" />
@@ -177,12 +183,13 @@ class Admin
 
     /**
      * Data section
-     * Contain all params to display data to map
+     * Contain all UI elements to display data to map.
+     * Register connect UI to Wordpress database.
      */
     function data_section () {
         add_settings_section("data_section", __("Data options", "WP-map-store-locator"), array($this,"section_data_title"), "msl_plugin");
         // data file url input
-        add_settings_field("msl_data_file_url", __( 'URL', 'WP-map-store-locator' ), array($this,"msl_data_file_url"), "msl_plugin", "data_section");
+        add_settings_field("msl_data_file_url", __( 'URL (JSON, GeoJSON)', 'WP-map-store-locator' ), array($this,"msl_data_file_url"), "msl_plugin", "data_section");
         register_setting("msl_settings", "msl_data_file_url");
 
         add_settings_field("msl_data_size", __( "Marker size (0-1)", 'WP-map-store-locator' ), array($this,"msl_data_size"), "msl_plugin", "data_section");
