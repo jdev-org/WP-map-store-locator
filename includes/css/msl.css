@@ -48,8 +48,8 @@
 
 /**input**/
 .input-search {
-  border: 1px solid #cccccc;
-  background-color: #f1f1f1 !important;
+  border: 1px solid #cccccc !important;
+  background-color: #f7f7f7 !important;
   font-size: 16px !important;
   padding: 10px !important;
   border-radius: 3px !important;
