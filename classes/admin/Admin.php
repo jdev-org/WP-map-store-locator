@@ -28,7 +28,7 @@ class Admin
     public function add_new_menu_items() {
         add_menu_page(
             'Map Store Locator',
-            'Msl',
+            __('Map Store Locator', 'WP-map-store-locator'),
             'manage_options',
             'msl_plugin',
             array( $this,

@@ -8,7 +8,7 @@ Author: JDev
 License: GPLv3 or later
 Domain Path: /languages
 Text Domain: WP-map-store-locator
-Author URI: https://jdev.Fr
+Author URI: https://jdev.fr
 */
 include('classes/MslPlugin.php');
 
