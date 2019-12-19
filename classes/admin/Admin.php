@@ -86,7 +86,6 @@ class Admin
                 <?php echo __("Default map view options.", "WP-map-store-locator") ?>
             </div>
             </br>
-            </br>
             <?php echo __("Get coordinates in EPSG:3857 (lon, lat) from ", "WP-map-store-locator") ?>
             <a href="https://app.dogeo.fr/Projection/#/point-to-coords" target="_blank">
                 <?php echo __("Dogeo web site. ", "WP-map-store-locator") ?>
@@ -141,7 +140,7 @@ class Admin
         ?>
             <div style="border-bottom: 1px solid black;">
                 <?php echo __("Default popup options.", "WP-map-store-locator") ?>
-            </div>
+            </div>      
         <?php
     }
 
@@ -214,8 +213,10 @@ class Admin
                <?php echo __("Options to display data on the map.", "WP-map-store-locator") ?>
             </div>
             </br>
-            </br>
             <span><?php echo __("Display data with projection ", "WP-map-store-locator") ?><a href="http://epsg.io/4326" target="_blank">EPSG:4326.</a></span>
+            </br>
+            </br>
+            <?php echo __("Please, use SVG or PNG as icons.", "WP-map-store-locator") ?>
         <?php
     }
 
@@ -235,18 +236,39 @@ class Admin
         ?>
             <input type="text" name="msl_data_png1_url" id="msl_data_png1_url" value="<?php echo get_option('msl_data_png1_url'); ?>" />
         <?php
+        if(get_option('msl_data_png1_url')) {
+            ?>
+                </br>
+                </br>
+                <img src="<?php echo get_option('msl_data_png1_url'); ?>">
+            <?php
+        }        
     }
 
     function msl_data_png2_url() {
         ?>
             <input type="text" name="msl_data_png2_url" id="msl_data_png2_url" value="<?php echo get_option('msl_data_png2_url'); ?>" />
         <?php
+        if(get_option('msl_data_png2_url')) {
+            ?>
+                </br>
+                </br>
+                <img src="<?php echo get_option('msl_data_png2_url'); ?>">
+            <?php
+        }
     }
     
     function msl_data_png3_url() {
         ?>
             <input type="text" name="msl_data_png3_url" id="msl_data_png3_url" value="<?php echo get_option('msl_data_png3_url'); ?>" />
         <?php
+        if(get_option('msl_data_png3_url')) {
+            ?>
+                </br>
+                </br>
+                <img src="<?php echo get_option('msl_data_png3_url'); ?>">
+            <?php
+        }
     }
 
     function msl_data_png1_type() {
@@ -287,6 +309,8 @@ class Admin
             <div style="border-bottom: 1px solid black;">
                <?php echo __("Search options", "WP-map-store-locator") ?>
             </div>
+            </br>
+            <?php echo __("Please, use SVG or PNG as icons.", "WP-map-store-locator") ?>            
         <?php
     }
     
@@ -294,10 +318,17 @@ class Admin
         ?>
             <input type="text" name="msl_marker_search_url" id="msl_marker_search_url" value="<?php echo get_option('msl_marker_search_url'); ?>" />
         <?php
+        if(get_option('msl_marker_search_url')) {
+            ?>
+                </br>
+                </br>
+                <img src="<?php echo get_option('msl_marker_search_url'); ?>">
+            <?php
+        }
     }
     function msl_marker_search_size() {
         ?>
-            <input type="text" name="msl_marker_search_size" id="msl_marker_search_size" value="<?php echo get_option('msl_marker_search_size'); ?>" />
+            <input type="number" step="0.01" name="msl_marker_search_size" id="msl_marker_search_size" value="<?php echo get_option('msl_marker_search_size'); ?>" />
         <?php
     }
 }

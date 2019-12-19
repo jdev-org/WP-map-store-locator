@@ -77,8 +77,7 @@ msgstr "Options d'affichage de l'infobulle par défaut."
 
 #: classes/admin/Admin.php:146
 msgid "Please, use SVG or PNG as icons."
-msgstr ""
-"Merci d'utiliser des liens vers les formats SVG et PNG pour les symboles."
+msgstr "Merci d'utiliser les format SVG et PNG pour les symboles."
 
 #: classes/admin/Admin.php:185
 msgid "Data options"
