@@ -151,7 +151,7 @@ class MslWidget extends WP_Widget {
         ?>
             <!--Search input with autocompletion-->
             <div class="autocomplete">
-                <input class="input-search input-text" id=<?= $inputId ?> type="text" name="nominatim" placeholder=" <?= __('Place, address, city, ...', 'WP-map-store-locator');?>">
+                <input class="input-search input-text" id=<?= $inputId ?> type="text" name="nominatim" placeholder=" <?= __('Enter your adresse to get  the nearest sale point', 'WP-map-store-locator');?>">
             </div>
             <!--OpenLayers map div-->
             <div id=<?= $mapName ?>
