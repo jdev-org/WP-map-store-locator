@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: WP-map-store-locator\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-19 11:36+0000\n"
-"PO-Revision-Date: 2019-12-19 11:37+0000\n"
+"PO-Revision-Date: 2019-12-19 14:50+0000\n"
 "Last-Translator: jdev <gaetan.bruel@jdev.fr>\n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
@@ -165,7 +165,7 @@ msgstr "Largeur"
 
 #: classes/widgets/Msl.php:123
 msgid "Place, address, city, ..."
-msgstr "Ex : Perros-Guirec, 22700"
+msgstr "Entrer votre adresse pour trouver les points de ventes..."
 
 #. Name of the plugin
 msgid "Map Store Location"
