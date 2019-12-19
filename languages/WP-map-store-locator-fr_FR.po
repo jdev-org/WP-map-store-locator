@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WP-map-store-locator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-19 11:33+0000\n"
-"PO-Revision-Date: 2019-12-19 11:34+0000\n"
+"POT-Creation-Date: 2019-12-19 11:36+0000\n"
+"PO-Revision-Date: 2019-12-19 11:37+0000\n"
 "Last-Translator: jdev <gaetan.bruel@jdev.fr>\n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
@@ -84,8 +84,8 @@ msgid "Data options"
 msgstr "Options du jeu de données"
 
 #: classes/admin/Admin.php:185
-msgid "URL"
-msgstr "URL"
+msgid "URL (JSON, GeoJSON)"
+msgstr "URL (JSON, GeoJSON)"
 
 #: classes/admin/Admin.php:191
 msgid "Type 1"
