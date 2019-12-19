@@ -120,7 +120,7 @@ class MslWidget extends WP_Widget {
         ?>
             <!--Make sure the form has the autocomplete function switched off:-->
             <div class="autocomplete">
-                <input class="input-search input-text" id=<?= $inputId ?> type="text" name="nominatim" placeholder="Place, City, etc.">
+                <input class="input-search input-text" id=<?= $inputId ?> type="text" name="nominatim" placeholder=" <?= __('Place, address, city, ...', 'WP-map-store-locator');?>">
             </div>
             <div id=<?= $mapName ?>
                 style="
