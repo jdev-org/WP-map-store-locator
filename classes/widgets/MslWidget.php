@@ -10,11 +10,13 @@ class MslWidget extends WP_Widget {
      * Fix and avoid openLayers lib dupplication errors.
      */
     public $isMapReady;
+    public $plugin_dir;
     
     /**
      * Constructor
      */
     function __construct() {
+        $this->plugin_dir = plugins_url() . '/WP-map-store-locator/';
         parent::__construct(
             'msl',
             __( 'Map Store Locator', 'WP-map-store-locator' ),
@@ -26,9 +28,10 @@ class MslWidget extends WP_Widget {
      * Call to register and init this widget.
      */
     function register() {
-        add_action('widgets_init', array( $this, 'widgetInit' ) );        
-        add_action('init', array($this, 'load_scripts'));
-        add_shortcode('msl',array($this,'displayWidget'));
+        add_action( 'widgets_init', array( $this, 'widgetInit' ) );        
+        add_action( 'init', array( $this, 'load_scripts' ) );
+        add_shortcode( 'msl', array( $this, 'displayWidget' ) );
+        add_action( 'wp_enqueue_scripts', array($this,'load_dep' ) );
     }
 
     /**
@@ -48,6 +51,14 @@ class MslWidget extends WP_Widget {
      */
     function load_scripts() {
         wp_enqueue_script('jquery');
+    }
+
+    /**
+     * Load scripts and styles
+     */
+    function load_dep() {
+        wp_enqueue_script('ol_js', $this->plugin_dir . '/includes/lib/ol-6.1.1/js/ol.js' );
+        wp_enqueue_style( 'msl', $this->plugin_dir . '/includes/css/msl.css' );
     }
 
     /**
@@ -119,8 +130,6 @@ class MslWidget extends WP_Widget {
             <!doctype html>
             <html lang="en">
             <head>
-                <link rel="stylesheet" href="<?= plugins_url() . '/WP-map-store-locator/includes/lib/ol-6.1.1/css/ol.css'?>">
-                <link rel="stylesheet" href="<?= plugins_url() . '/WP-map-store-locator/includes/css/msl.css'?>">
                 <style>
                 .ol-attribution.ol-uncollapsible {
                     display: none !important;

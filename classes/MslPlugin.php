@@ -3,8 +3,8 @@
  * Domain Path: /languages
  * Text Domain: WP-map-store-locator
  */
-require_once('admin/Admin.php');
-require_once('widgets/Msl.php');
+require_once('admin/MslAdmin.php');
+require_once('widgets/MslWidget.php');
 
 class MslPlugin
 {
@@ -24,7 +24,7 @@ class MslPlugin
     function register() {
         load_plugin_textdomain( 'WP-map-store-locator', false, 'WP-map-store-locator/languages/' );
         // add admin page
-        $admin = new Admin();
+        $admin = new MslAdmin();
         $admin->register();
 
         $this->activateWidgets();

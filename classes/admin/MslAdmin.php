@@ -3,7 +3,7 @@
  * Domain Path: /languages
  */
 
-class Admin
+class MslAdmin
 {
     /**
      * Constructor
