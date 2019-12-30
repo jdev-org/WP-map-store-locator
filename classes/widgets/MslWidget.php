@@ -10,6 +10,7 @@ class MslWidget extends WP_Widget {
      * Fix and avoid openLayers lib dupplication errors.
      */
     public $isMapReady;
+    public $plugin_dir;
     
     /**
      * Constructor
@@ -26,9 +27,11 @@ class MslWidget extends WP_Widget {
      * Call to register and init this widget.
      */
     function register() {
-        add_action('widgets_init', array( $this, 'widgetInit' ) );        
-        add_action('init', array($this, 'load_scripts'));
-        add_shortcode('msl',array($this,'displayWidget'));
+        add_action( 'widgets_init', array( $this, 'widgetInit' ) );
+        add_action( 'init', array( $this, 'load_scripts' ) );
+        add_shortcode( 'msl', array( $this, 'displayWidget' ) );
+        add_action( 'wp_enqueue_scripts', array($this,'load_dep' ), 1 );
+        
     }
 
     /**
@@ -48,6 +51,15 @@ class MslWidget extends WP_Widget {
      */
     function load_scripts() {
         wp_enqueue_script('jquery');
+    }
+
+    /**
+     * Load scripts and styles
+     */
+    function load_dep() {
+        wp_enqueue_script('ol_js', MSL_PLUGIN_URL."includes/lib/ol-6.1.1/js/ol.js", null, '6.1.1' );
+        // use !important to override child theme css
+        wp_enqueue_style( 'msl', MSL_PLUGIN_URL."includes/css/msl.css" );
     }
 
     /**
@@ -119,8 +131,8 @@ class MslWidget extends WP_Widget {
             <!doctype html>
             <html lang="en">
             <head>
-                <link rel="stylesheet" href="<?= plugins_url() . '/WP-map-store-locator/includes/lib/ol-6.1.1/css/ol.css'?>">
-                <link rel="stylesheet" href="<?= plugins_url() . '/WP-map-store-locator/includes/css/msl.css'?>">
+                <!-- fix WP enqueue style behavior- use this css loader to keep original lib css over child theme --> 
+                <link rel="stylesheet" href="<?php echo MSL_PLUGIN_URL."includes/lib/ol-6.1.1/css/ol.css";?>" type="text/css">
                 <style>
                 .ol-attribution.ol-uncollapsible {
                     display: none !important;
@@ -128,7 +140,6 @@ class MslWidget extends WP_Widget {
                 </style>
             </head>
             <body>
-                <script src="<?= plugins_url() . '/WP-map-store-locator/includes/lib/ol-6.1.1/js/ol.js'?>"></script>
             </body>
             </html>     
             <?php

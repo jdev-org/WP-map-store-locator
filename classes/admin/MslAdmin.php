@@ -3,14 +3,12 @@
  * Domain Path: /languages
  */
 
-class Admin
+class MslAdmin
 {
     /**
      * Constructor
      */
-    public function __construct() {
-        $this->plugin_path= plugin_dir_url( dirname( __FILE__ ) );
-    }
+    public function __construct() {}
 
     /**
      * Hook : Register methods on init to create sections and display UIs.
@@ -236,7 +234,7 @@ class Admin
                 </br>
                 </br>
                 <a 
-                    href="<?php echo plugins_url() . '/WP-map-store-locator/assets/data/clients.json'?>" 
+                    href="<?php echo MSL_PLUGIN_URL.'assets/data/clients.json'?>" 
                     target="_blank">
                     <?php echo __('Check the template file.', 'WP-map-store-locator') ?>
                 </a>

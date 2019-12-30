@@ -3,30 +3,26 @@
  * Domain Path: /languages
  * Text Domain: WP-map-store-locator
  */
-require_once('admin/Admin.php');
-require_once('widgets/Msl.php');
+require_once('admin/MslAdmin.php');
+require_once('widgets/MslWidget.php');
 
 class MslPlugin
 {
     
-    public $plugin;
-    
     /**
      * Constructor
      */
-    function __construct() {
-        $this->plugin = plugin_basename( __FILE__ );
-    }
+    function __construct() {}
     
     /**
      * Call to register and init plugin.
      */
     function register() {
+        // load text domain to translate
         load_plugin_textdomain( 'WP-map-store-locator', false, 'WP-map-store-locator/languages/' );
         // add admin page
-        $admin = new Admin();
+        $admin = new MslAdmin();
         $admin->register();
-
         $this->activateWidgets();
     }
 
@@ -39,7 +35,7 @@ class MslPlugin
 	}
 
     /**
-     * When plugin is seactivate.
+     * When plugin is deactivate.
      */
 	function deactivate() {
 		// flush rewrite rules
