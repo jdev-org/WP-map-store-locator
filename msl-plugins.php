@@ -12,9 +12,9 @@ Author URI: https://jdev.fr
 */
 include('classes/MslPlugin.php');
 
-$msl = new MslPlugin();
-$msl->register();
+$msl = new MslPlugin(plugin_dir_url( __FILE__ ));
 
+$msl->register();
 
 register_activation_hook( __FILE__, array( $msl, 'activate' ) );
 register_deactivation_hook( __FILE__, array( $msl, 'deactivate' ) );

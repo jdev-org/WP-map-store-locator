@@ -15,23 +15,29 @@ class MslWidget extends WP_Widget {
     /**
      * Constructor
      */
-    function __construct() {
-        $this->plugin_dir = plugins_url() . '/WP-map-store-locator/';
+    function __construct($plugin_dir) {
+        $this->plugin_dir = $plugin_dir;
         parent::__construct(
             'msl',
             __( 'Map Store Locator', 'WP-map-store-locator' ),
             array( 'description' => __( 'A plugin to display geographic data in a map.', 'WP-map-store-locator' ))
         );
+        define('MSL_RESSOURCES_URL', $this->plugin_dir."includes/");
+        define('MSL_LIB_URL', MSL_RESSOURCES_URL."lib/");
+        define('MSL_OL_URL', MSL_LIB_URL."ol-6.1.1/");
+        define('MSL_OL_CSS', MSL_OL_URL."css/ol.css");
+        define('MSL_OL_JS', MSL_OL_URL."js/ol.js");
     }
 
     /**
      * Call to register and init this widget.
      */
     function register() {
-        add_action( 'widgets_init', array( $this, 'widgetInit' ) );        
+        add_action( 'widgets_init', array( $this, 'widgetInit' ) );
         add_action( 'init', array( $this, 'load_scripts' ) );
         add_shortcode( 'msl', array( $this, 'displayWidget' ) );
-        add_action( 'wp_enqueue_scripts', array($this,'load_dep' ) );
+        add_action( 'wp_enqueue_scripts', array($this,'load_dep' ), 1 );
+        
     }
 
     /**
@@ -57,8 +63,9 @@ class MslWidget extends WP_Widget {
      * Load scripts and styles
      */
     function load_dep() {
-        wp_enqueue_script('ol_js', $this->plugin_dir . '/includes/lib/ol-6.1.1/js/ol.js' );
-        wp_enqueue_style( 'msl', $this->plugin_dir . '/includes/css/msl.css' );
+        wp_enqueue_script('ol_js', MSL_OL_JS, null, '6.1.1' );
+        // use !important to override child theme css
+        wp_enqueue_style( 'msl', MSL_RESSOURCES_URL.'css/msl.css' );
     }
 
     /**
@@ -130,6 +137,8 @@ class MslWidget extends WP_Widget {
             <!doctype html>
             <html lang="en">
             <head>
+                <!-- fix WP enqueue style behavior- use this css loader to keep original lib css over child theme --> 
+                <link rel="stylesheet" href="<?php echo MSL_OL_CSS;?>" type="text/css">
                 <style>
                 .ol-attribution.ol-uncollapsible {
                     display: none !important;
@@ -137,7 +146,6 @@ class MslWidget extends WP_Widget {
                 </style>
             </head>
             <body>
-                <script src="<?= plugins_url() . '/WP-map-store-locator/includes/lib/ol-6.1.1/js/ol.js'?>"></script>
             </body>
             </html>     
             <?php
