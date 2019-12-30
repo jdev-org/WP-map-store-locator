@@ -5,14 +5,10 @@
 
 class MslAdmin
 {
-    public $plugin_url;
     /**
      * Constructor
      */
-    public function __construct() {
-        //$this->plugin_url= $plugin_url;
-        //print_r(plugins_url(__FILE__));
-    }
+    public function __construct() {}
 
     /**
      * Hook : Register methods on init to create sections and display UIs.
