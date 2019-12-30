@@ -259,6 +259,7 @@ class MslWidget extends WP_Widget {
                 // create point feature
                 var iconFeature = new ol.Feature({
                     geometry: new ol.geom.Point(xy),
+                    id: id
                 });
                 if (marker ) { // avoid empty style and no ol.style.icon assertion error
                     // create style
@@ -309,7 +310,17 @@ class MslWidget extends WP_Widget {
                 });
                 return find;
             }
-            
+
+            /**
+             * Remove overlays from given map
+             * @param map - ol.map
+             */ 
+            function destroyOverlays(map) {
+                if(map.getOverlays().getArray().length) {
+                    map.getOverlays().getArray()[0].setPosition(undefined);
+                    map.getOverlays().getArray().splice(0, map.getOverlays().getArray().length);
+                }
+            }
             /**
             * Function to generate the full process to destroy, create and set map overlay.
             * This avoid wrong popup behavior and map id's conflict when popup is display into a bad map.
@@ -328,10 +339,7 @@ class MslWidget extends WP_Widget {
                 * one overlay by map that will be update.
                 */
                 jQuery('#'+ popupId).css('display', 'none');
-                if(map.getOverlays().getArray().length) {
-                    map.getOverlays().getArray()[0].setPosition(undefined);
-                    map.getOverlays().getArray().splice(0, map.getOverlays().getArray().length);
-                }
+                destroyOverlays(map);
                 // create and add overlay to map
                 var overlay = new ol.Overlay({
                     element: document.getElementById('popup-' + map.get('target')),
@@ -343,7 +351,7 @@ class MslWidget extends WP_Widget {
                 // display popup initially hidden
                 jQuery('#'+ 'popup-' + map.get('target')).css('display','inline-block');
                 // add content html
-                if(feature.id_ === 'home-feature') {
+                if(feature.getProperties().id === 'home-feature') {
                     // display some content if marker is the owner or default retailer marker
                     if(overlayHtmlContent.length > 0) {
                         html = overlayHtmlContent;
@@ -363,7 +371,9 @@ class MslWidget extends WP_Widget {
                         html = contactMsg;
                     }
                 }
-                if(html.length < 1) {
+                if(html.indexOf('undefined') > -1) {
+                    destroyOverlays(map);
+                } else if(html.length < 1) {
                     // display contact message
                     html = contactMsg;
                 }
