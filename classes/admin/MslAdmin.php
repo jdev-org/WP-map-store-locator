@@ -11,7 +11,6 @@ class MslAdmin
      */
     public function __construct($plugin_url) {
         $this->plugin_url= $plugin_url;
-        print_r(plugin_dir_url( __FILE__ ));
     }
 
     /**
