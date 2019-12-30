@@ -682,7 +682,7 @@ class MslWidget extends WP_Widget {
                 <?= $mapName ?>.on('click', evt => {
                     // Open contact page
                     if(openPageUrl) {
-                        window.open(openPageUrl);
+                        window.location.replace(openPageUrl);
                     }                    
                 })
             }
