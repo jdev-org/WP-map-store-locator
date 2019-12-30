@@ -9,8 +9,9 @@ class MslAdmin
     /**
      * Constructor
      */
-    public function __construct($plugin_url) {
-        $this->plugin_url= $plugin_url;
+    public function __construct() {
+        //$this->plugin_url= $plugin_url;
+        //print_r(plugins_url(__FILE__));
     }
 
     /**
@@ -237,7 +238,7 @@ class MslAdmin
                 </br>
                 </br>
                 <a 
-                    href="<?php echo plugins_url() . $this->plugin_url.'assets/data/clients.json'?>" 
+                    href="<?php echo MSL_PLUGIN_URL.'assets/data/clients.json'?>" 
                     target="_blank">
                     <?php echo __('Check the template file.', 'WP-map-store-locator') ?>
                 </a>

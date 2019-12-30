@@ -15,18 +15,12 @@ class MslWidget extends WP_Widget {
     /**
      * Constructor
      */
-    function __construct($plugin_dir) {
-        $this->plugin_dir = $plugin_dir;
+    function __construct() {
         parent::__construct(
             'msl',
             __( 'Map Store Locator', 'WP-map-store-locator' ),
             array( 'description' => __( 'A plugin to display geographic data in a map.', 'WP-map-store-locator' ))
         );
-        define('MSL_RESSOURCES_URL', $this->plugin_dir."includes/");
-        define('MSL_LIB_URL', MSL_RESSOURCES_URL."lib/");
-        define('MSL_OL_URL', MSL_LIB_URL."ol-6.1.1/");
-        define('MSL_OL_CSS', MSL_OL_URL."css/ol.css");
-        define('MSL_OL_JS', MSL_OL_URL."js/ol.js");
     }
 
     /**
@@ -63,9 +57,9 @@ class MslWidget extends WP_Widget {
      * Load scripts and styles
      */
     function load_dep() {
-        wp_enqueue_script('ol_js', MSL_OL_JS, null, '6.1.1' );
+        wp_enqueue_script('ol_js', MSL_PLUGIN_URL."includes/lib/ol-6.1.1/js/ol.js", null, '6.1.1' );
         // use !important to override child theme css
-        wp_enqueue_style( 'msl', MSL_RESSOURCES_URL.'css/msl.css' );
+        wp_enqueue_style( 'msl', MSL_PLUGIN_URL."includes/css/msl.css" );
     }
 
     /**
@@ -138,7 +132,7 @@ class MslWidget extends WP_Widget {
             <html lang="en">
             <head>
                 <!-- fix WP enqueue style behavior- use this css loader to keep original lib css over child theme --> 
-                <link rel="stylesheet" href="<?php echo MSL_OL_CSS;?>" type="text/css">
+                <link rel="stylesheet" href="<?php echo MSL_PLUGIN_URL."includes/lib/ol-6.1.1/css/ol.css";?>" type="text/css">
                 <style>
                 .ol-attribution.ol-uncollapsible {
                     display: none !important;

@@ -9,24 +9,20 @@ require_once('widgets/MslWidget.php');
 class MslPlugin
 {
     
-    public $plugin_url;
-    
     /**
      * Constructor
      */
-    function __construct($plugin_path) {
-        $this->plugin_url = $plugin_path;
-    }
+    function __construct() {}
     
     /**
      * Call to register and init plugin.
      */
     function register() {
-        load_plugin_textdomain( 'WP-map-store-locator', false, $this->plugin_url.'languages/' );
+        // load text domain to translate
+        load_plugin_textdomain( 'WP-map-store-locator', false, 'WP-map-store-locator/languages/' );
         // add admin page
-        $admin = new MslAdmin($this->plugin_url);
+        $admin = new MslAdmin();
         $admin->register();
-
         $this->activateWidgets();
     }
 
@@ -39,7 +35,7 @@ class MslPlugin
 	}
 
     /**
-     * When plugin is seactivate.
+     * When plugin is deactivate.
      */
 	function deactivate() {
 		// flush rewrite rules
@@ -50,7 +46,7 @@ class MslPlugin
      * Activate widgets.
      */
     function activateWidgets() {
-        $msl_widget = new MslWidget($this->plugin_url);
+        $msl_widget = new MslWidget();
         $msl_widget->register();
     }
 }
