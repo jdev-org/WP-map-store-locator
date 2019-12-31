@@ -42,8 +42,8 @@
 /*AUTOCOMPLETE*/
 
 .autocomplete {
-  position: relative;
-  margin-bottom: 0px;
+  position: relative !important;
+  margin-bottom: 0px !important;
 }
 
 /**input**/
@@ -89,6 +89,6 @@ input-text {
 /*when navigating through the items using the arrow keys:*/
 .autocomplete-active {
   background-color: DodgerBlue !important; 
-  color: #ffffff; 
+  color: #ffffff !important; 
   
 }
