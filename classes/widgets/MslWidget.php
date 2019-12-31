@@ -58,8 +58,10 @@ class MslWidget extends WP_Widget {
      */
     function load_dep() {
         wp_enqueue_script('ol_js', MSL_PLUGIN_URL."includes/lib/ol-6.1.1/js/ol.js", null, '6.1.1' );
+        wp_enqueue_style( 'ol_css', MSL_PLUGIN_URL."includes/lib/ol-6.1.1/css/ol.css" );
         // use !important to override child theme css
         wp_enqueue_style( 'msl', MSL_PLUGIN_URL."includes/css/msl.css" );
+        
     }
 
     /**
@@ -131,8 +133,6 @@ class MslWidget extends WP_Widget {
             <!doctype html>
             <html lang="en">
             <head>
-                <!-- fix WP enqueue style behavior- use this css loader to keep original lib css over child theme --> 
-                <link rel="stylesheet" href="<?php echo MSL_PLUGIN_URL."includes/lib/ol-6.1.1/css/ol.css";?>" type="text/css">
                 <style>
                 .ol-attribution.ol-uncollapsible {
                     display: none !important;
