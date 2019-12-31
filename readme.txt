@@ -1,4 +1,4 @@
-=== Plugin Name ===
+=== Map Store Locator ===
 Contributors: jdevsig
 Donate link: https://jdev.fr/
 Tags: map, OpenStreetMap, CSV, GeoJson, geotag, geolocation, OSM, OpenLayers, Open Layers, Open Street Map,POI, geocode, geotagging, location, store, retaillers, jdev
