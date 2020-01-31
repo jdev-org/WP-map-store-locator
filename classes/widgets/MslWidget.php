@@ -39,11 +39,21 @@ class MslWidget extends WP_Widget {
      * Get attributes from shortcode and call map to display into article, page, etc.
      */
     function displayWidget($atts = [], $content = null, $tag = ''){
+        ob_start();
+        $height = '15em';
+        $width = '100%';
         $isSimpleMap;
         if (isset($atts['map'])) {
             $isSimpleMap = $atts['map'] === 'simple' ? 'on' : 'off';
         }
-        $this->initHTML(array('msl_simple' => $isSimpleMap, 'msl_height' => $atts['height'], 'msl_width' => $atts['width']));
+        if(isset($atts['height'])) {
+            $height = $atts['height'];
+        }
+        if(isset($atts['width'])) {
+            $width = $atts['width'];
+        }
+        $this->initHTML(array('msl_simple' => $isSimpleMap, 'msl_height' => $height, 'msl_width' => $width));
+        return ob_get_clean();
     }
 
     /**
