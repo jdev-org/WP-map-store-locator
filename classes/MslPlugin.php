@@ -19,7 +19,7 @@ class MslPlugin
      */
     function register() {
         // load text domain to translate
-        load_plugin_textdomain( 'WP-map-store-locator', false, 'WP-map-store-locator/languages/' );
+        load_plugin_textdomain( 'WP-map-store-locator', false, 'map-store-location/languages/' );
         // add admin page
         $admin = new MslAdmin();
         $admin->register();
