@@ -3,7 +3,7 @@
 Plugin Name: Map Store Location
 
 Description: A plugin to display geographic data in a map.
-Version: 1.0.0
+Version: 1.1.0
 Author: JDev
 License: GPLv3 or later
 Domain Path: /languages

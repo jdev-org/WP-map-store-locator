@@ -53,3 +53,9 @@ This is on opensource project, you can contribute to it, or you can contact http
 
 = 1.0.0 =
 This is the first version.
+
+= 1.1.0 =
+Fix widget position
+Fix search input width
+Fix shortcode param
+Fix translation path
