@@ -172,7 +172,7 @@ class MslWidget extends WP_Widget {
         ?>
             <!--Search input with autocompletion-->
             <div class="autocomplete">
-                <input class="input-search input-text" id=<?= $inputId ?> type="text" name="nominatim" placeholder=" <?= __('Enter your adresse to get  the nearest sale point', 'WP-map-store-locator');?>">
+                <input class="input-search input-text" id=<?= $inputId ?> type="text" name="photon" placeholder=" <?= __('Enter your adresse to get  the nearest sale point', 'WP-map-store-locator');?>">
             </div>
             <!--OpenLayers map div-->
             <div id=<?= $mapName ?>
@@ -270,8 +270,8 @@ class MslWidget extends WP_Widget {
                 var iconFeature = new ol.Feature({
                     geometry: new ol.geom.Point(xy),
                     id: id
-                });
-                if (marker ) { // avoid empty style and no ol.style.icon assertion error
+                });                
+                if (marker) { // avoid empty style and no ol.style.icon assertion error
                     // create style
                     var iconStyle = new ol.style.Style({
                         image: new ol.style.Icon({
@@ -284,10 +284,13 @@ class MslWidget extends WP_Widget {
                     });
                     // set style
                     iconFeature.setStyle(iconStyle);
-                    // remove layer if already exist
-                    if(getLayerById(id, mapName)) {
-                        mapName.removeLayer(id);
-                    }
+                }                
+                // remove layer if already exist
+                if(getLayerById(id, mapName)) {
+                    var searchLayer = getLayerById(id, mapName);
+                    searchLayer.getSource().clear();
+                    searchLayer.getSource().addFeature(iconFeature);
+                } else {
                     // create layer with uniq id
                     var layer = new ol.layer.Vector({
                         source: new ol.source.Vector({
@@ -298,7 +301,7 @@ class MslWidget extends WP_Widget {
                         id: id
                     });
                     // add marker to map
-                    mapName.addLayer(layer);
+                    mapName.addLayer(layer);                    
                 }
             }
             
@@ -571,9 +574,8 @@ class MslWidget extends WP_Widget {
                         results.forEach(e => {
                             // create div for each
                             b = document.createElement("DIV");
-                            var xy =  e.lon + ',' + e.lat;
-                            var val = '';
-                            var place = e.address;
+                            var xy =  e.geometry.coordinates[0] + ',' + e.geometry.coordinates[1];
+                            //var place = e.address;
                             var add = [];
                             function addToArray(el) {
                                 if(add.indexOf(el) < 0) {
@@ -581,21 +583,12 @@ class MslWidget extends WP_Widget {
                                 }
                             }
                             // create string content according to nominatim returns
-                            if( (place.county  || place.city  || place.village) && place.country) {
-                                if(place.road) {
-                                    addToArray(place.road);
-                                } else if (place.address29) {
-                                    addToArray(place.address29)
-                                };
-                                if(place.village) {addToArray(place.village)};
-                                if(place.city) {addToArray(place.city)};
-                                if(place.county)  {addToArray(place.county)};
-                                if(place.postcode) {add.push(place.postcode)};
-                                if(place.country_code) {add.push(place.country_code)};
-                            } else if (place.country && place.state){
-                                val = place.state + ', ' + place.country; 
-                            }
-                            val = add.join(', ');
+                            var val = 
+                                `${e.properties.street ? e.properties.street + ', ':''}` + 
+                                `${e.properties.city ? e.properties.city + ', ': e.properties.name + ', '}` +
+                                `${e.properties.state ? e.properties.state + ', ':''}` +
+                                `${e.properties.country ? e.properties.country:''}`
+                            ;
                             // set content
                             if(xy && val && options.indexOf(val) < 0) {
                                 options.push(val);
@@ -639,12 +632,12 @@ class MslWidget extends WP_Widget {
                         if(value &&value.length > 3) {
                             // Ajax request
                             var xhr = new XMLHttpRequest();
-                            xhr.open('GET', 'https://nominatim.openstreetmap.org/search?q='+ value + '&format=json&addressdetails=1&limit=5');
+                            xhr.open('GET', 'https://photon.komoot.de/api/?limit=5&q='+ value + '&limit=5');
                             xhr.onload = function() {
                                 if (xhr.status === 200 && xhr.responseText) {
                                     var response = xhr.responseText.length ? JSON.parse(xhr.responseText) : null;
                                     if(response) {
-                                        displayList(response, parent);
+                                        displayList(response.features, parent);
                                     }
                                 }
                                 else {
