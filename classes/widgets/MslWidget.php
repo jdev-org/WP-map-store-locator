@@ -649,11 +649,12 @@ class MslWidget extends WP_Widget {
                                             var props = e.getProperties();
                                             var line = new ol.geom.LineString([center, e.getGeometry().getCoordinates()]);
                                             // get line length
-                                            if(!closestDist[line.getLength()]){
-                                                closestDist.push(line.getLength());
-                                                closestPoints[line.getLength()] = [];
+                                            var lineMeasure = line.getLength();
+                                            if(closestDist.indexOf(lineMeasure)<0){
+                                                closestDist.push(lineMeasure);
+                                                closestPoints[lineMeasure.toString()] = [];
                                             }
-                                            closestPoints[line.getLength()].push(e);
+                                            closestPoints[lineMeasure.toString()].push(e);
                                         })
                                         
                                         // order list to get closests distances first
@@ -667,7 +668,7 @@ class MslWidget extends WP_Widget {
                                         var p = []
                                         minDists.forEach(dist => {
                                             closestPoints[dist].forEach(e => {
-                                                if(p.length <= maxResult) {
+                                                if(p.length < maxResult) {
                                                     p.push(e);
                                                 }
                                             })
