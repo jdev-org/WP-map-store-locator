@@ -608,8 +608,8 @@ class MslWidget extends WP_Widget {
 
                             // create string content according to nominatim returns
                             var val = 
-                                `${e.properties.street ? e.properties.street + ', ':''}` + 
-                                `${e.properties.city ? e.properties.city + ', ': e.properties.name + ', '}` +
+                                `${e.properties.street ? e.properties.street + ', ': e.properties.name + ', '}` + 
+                                `${e.properties.city ? e.properties.city + ', ': ''}` +
                                 `${e.properties.state ? e.properties.state + ', ':''}` +
                                 `${e.properties.country ? e.properties.country:''}`
                             ;
