@@ -366,7 +366,8 @@ class MslWidget extends WP_Widget {
                 // display popup initially hidden
                 jQuery('#'+ 'popup-' + map.get('target')).css('display','inline-block');
                 // add content html
-                if(feature.getProperties().id === 'home-feature') {
+                var props = feature.getProperties();
+                if(props.id === 'home-feature') {
                     // display some content if marker is the owner or default retailer marker
                     if(overlayHtmlContent.length > 0) {
                         html = overlayHtmlContent;
@@ -377,10 +378,13 @@ class MslWidget extends WP_Widget {
                 } else {
                     // else it's a json data feature, we display specific properties.
                     try {
-                        var f = feature.getProperties();
-                        html = '<strong>'+ f.nom + '</strong>';
-                        html += '</br>'+ f.adresse + ', ' + f.code_postal + ', ' + f.ville;
-                        document.getElementById('popup-content-' + map.get('target')).innerHTML = html;
+                        if(!props.name) {
+                            html = '<strong>'+ props.nom + '</strong>';
+                            html += '</br>'+ props.adresse + ', ' + props.code_postal + ', ' + props.ville;
+                        } else {
+                            html = '<span>'+ props.name + '</span>';
+                        }
+                        document.getElementById('popup-content-' + map.get('target')).innerHTML = html;                        
                     } catch (e) {
                         // display contact message
                         html = contactMsg;
@@ -501,7 +505,9 @@ class MslWidget extends WP_Widget {
                 function getStyle(feature) {
                     var style;
                     var cat = feature.get('code_categorie');
-                    
+                    if(!cat && feature.get('styleUrl') && feature.get('styleUrl').indexOf('icon') >= 0) { // from kml
+                        cat = feature.get('styleUrl').indexOf('icon-1502') < 0 ? 'CHR' : 'DET';
+                    }
                     if(types.indexOf(cat) > -1 && cat.length === types.length){
                         var imgCat = img[types.indexOf(cat)];
                         style = new ol.style.Style({
@@ -614,7 +620,6 @@ class MslWidget extends WP_Widget {
                                 b.innerHTML += "<input type='hidden' value='" + val + "' lonlat='" + xy + "'>";
                                 b.innerHTML += "<input type='hidden' value='" + xy + "'>";
                                 b.addEventListener("click", function(e) {
-                                    var closestFeature;
                                     /*insert the value for the autocomplete text field:*/
                                     inp.value = this.getElementsByTagName("span")[0].innerHTML
                                     inp.xy = this.getElementsByTagName("input")[1].value;
@@ -626,12 +631,6 @@ class MslWidget extends WP_Widget {
                                     // display nearest point
                                     var vector = featuresToLayer(jsonFeatures, '', <?= $mapName ?>);
                                     var source = vector ? vector.getSource() : '';
-                                    if(vector) {
-                                        var source = vector.getSource();
-                                        if(source) {
-                                            closestFeature = source.getClosestFeatureToCoordinate(center);
-                                        }
-                                    }
 
                                     // close the list of autocompleted values
                                     closeAllLists();
@@ -676,14 +675,14 @@ class MslWidget extends WP_Widget {
 
                                         // clear layer and addFeatures
                                         vector = featuresToLayer(p, '', <?= $mapName ?>);
-                                        <?= $mapName ?>.addLayer(vector);
-
-                                        if(p.length < 2) {
-                                            // get feature from search result marker
-                                            var markerFeature = getLayerById("search_marker", <?= $mapName ?>).getSource().getFeatures()[0];
-                                            p.push(markerFeature);                                        
-                                            displayPopup(closestFeature, <?= $mapName ?>);
+                                        <?= $mapName ?>.addLayer(vector);                                    
+                                        // show result popup if only one result
+                                        if(p.length === 1) {
+                                            displayPopup(p[0], <?= $mapName ?>);
                                         }
+                                        // show result marker
+                                        var markerFeature = getLayerById("search_marker", <?= $mapName ?>).getSource().getFeatures()[0];
+                                        p.push(markerFeature);                                        
                                         // adjust zoom and extent
                                         zoomToFeatures(p, <?= $mapName ?>, 1);                                        
                                     }
