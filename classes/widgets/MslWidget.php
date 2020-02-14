@@ -677,10 +677,9 @@ class MslWidget extends WP_Widget {
                                         // clear layer and addFeatures
                                         vector = featuresToLayer(p, '', <?= $mapName ?>);
                                         <?= $mapName ?>.addLayer(vector);                                    
-                                        // show result popup if only one result
-                                        if(p.length === 1) {
-                                            displayPopup(p[0], <?= $mapName ?>);
-                                        }
+                                        // show result popup if only on first feature
+                                        displayPopup(p[0], <?= $mapName ?>);
+                                        
                                         // show result marker
                                         var markerFeature = getLayerById("search_marker", <?= $mapName ?>).getSource().getFeatures()[0];
                                         p.push(markerFeature);                                        
