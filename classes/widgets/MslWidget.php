@@ -204,7 +204,7 @@ class MslWidget extends WP_Widget {
             var overlayTitle = <?= json_encode(get_option('msl_overlay_title'));?> || '';
             var overlayHtmlContent = <?= json_encode(get_option('msl_overlay_html'));?> || '';
             var dataUrl = <?= json_encode(get_option('msl_data_file_url'));?> || '';
-            var dataSize = <?= json_encode(get_option('msl_data_size'));?> || '';
+            var dataSize = <?= json_encode(get_option('msl_data_size'));?> || 0.8;
             var openPageUrl = <?= json_encode(get_option('msl_open_page'));?> || '';
             var img = [
                 <?= json_encode(get_option('msl_data_png1_url'));?>,
@@ -215,8 +215,8 @@ class MslWidget extends WP_Widget {
                 <?= json_encode(get_option('msl_data_png2_type'));?>,
                 <?= json_encode(get_option('msl_data_png3_type'));?>];
             var searchMarker = <?= json_encode(get_option('msl_marker_search_url'));?> || '';
-            var searchSize = <?= json_encode(get_option('msl_marker_search_size'));?> || '';
-            var maxResult = <?= json_encode(get_option('msl_marker_search_extent'));?> || '';
+            var searchSize = <?= json_encode(get_option('msl_marker_search_size'));?> || 1;
+            var maxResult = <?= json_encode(get_option('msl_marker_search_extent'));?> || 1;
             var jsonFeatures;
 
             /**
