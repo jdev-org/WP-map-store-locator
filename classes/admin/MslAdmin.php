@@ -317,6 +317,9 @@ class MslAdmin
         // search icon size
         add_settings_field("msl_marker_search_size", __( "Marker size (0-1)", 'WP-map-store-locator' ), array($this,"msl_marker_search_size"), "msl_plugin", "search_section");
         register_setting("msl_settings", "msl_marker_search_size");
+        // max point(s) to adjust result extent
+        add_settings_field("msl_marker_search_extent", __( "Max results", 'WP-map-store-locator' ), array($this,"msl_marker_search_extent"), "msl_plugin", "search_section");
+        register_setting("msl_settings", "msl_marker_search_extent");
     }    
 
     // section description text
@@ -347,4 +350,9 @@ class MslAdmin
             <input type="number" step="0.01" name="msl_marker_search_size" id="msl_marker_search_size" value="<?php echo get_option('msl_marker_search_size'); ?>" />
         <?php
     }
+    function msl_marker_search_extent() {
+        ?>
+            <input type="number" step="1" name="msl_marker_search_extent" id="msl_marker_search_extent" value="<?php echo get_option('msl_marker_search_extent'); ?>" />
+        <?php
+    }    
 }

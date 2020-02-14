@@ -215,7 +215,9 @@ class MslWidget extends WP_Widget {
                 <?= json_encode(get_option('msl_data_png2_type'));?>,
                 <?= json_encode(get_option('msl_data_png3_type'));?>];
             var searchMarker = <?= json_encode(get_option('msl_marker_search_url'));?> || '';
-            var searchSize = <?= json_encode(get_option('msl_marker_search_size'));?> || '';            
+            var searchSize = <?= json_encode(get_option('msl_marker_search_size'));?> || '';
+            var maxResult = <?= json_encode(get_option('msl_marker_search_extent'));?> || '';
+            var jsonFeatures;
 
             /**
             * Convert string coordinates to real array
@@ -457,9 +459,7 @@ class MslWidget extends WP_Widget {
                                 } else {
                                     features = res;
                                 }
-                                layerCustomers = featuresToLayer(features, layerId);
-                                layerCustomers.setVisible(false);
-                                map.addLayer(layerCustomers);
+                                jsonFeatures = features;
                             }
                         }
                         else {
@@ -476,7 +476,12 @@ class MslWidget extends WP_Widget {
                  * @param id - string as uniq id.
                  * @return ol.layer.vector object.
                  */
-                function featuresToLayer(features, id) {
+                function featuresToLayer(features, id, map) {
+                    // remove layer if already exist
+                    if(getLayerById(id,map)) {
+                        map.removeLayer(getLayerById(id,map));
+                    }
+                    // crate layer and add features
                     let vectorSource = new ol.source.Vector({
                         features
                     });
@@ -508,6 +513,22 @@ class MslWidget extends WP_Widget {
                     }
                     return [style];
                 }
+
+                /**
+                * From features, calculate and zoom in
+                * allow a param to adjust zoom out
+                * @param - Array of ol.feature object
+                * @param - map ol.map targeted
+                * @param - int our float number
+                */
+                function zoomToFeatures(features, map, out) {
+                    var extent = (new ol.source.Vector({
+                        features: features
+                    })).getExtent();
+                    map.getView().fit(extent, map.getSize());
+                    var zoom = map.getView().getZoom();
+                    map.getView().setZoom(zoom-(out ? out : 0));
+                }  
 
                 /**
                 * Create autocompletion behavior and HTML UI.
@@ -570,18 +591,15 @@ class MslWidget extends WP_Widget {
                     function displayList(results, parent) {
                         var b;
                         var options = [];
+
                         // parse results
                         results.forEach(e => {
+
                             // create div for each
                             b = document.createElement("DIV");
                             var xy =  e.geometry.coordinates[0] + ',' + e.geometry.coordinates[1];
-                            //var place = e.address;
                             var add = [];
-                            function addToArray(el) {
-                                if(add.indexOf(el) < 0) {
-                                    add.push(el);
-                                }
-                            }
+
                             // create string content according to nominatim returns
                             var val = 
                                 `${e.properties.street ? e.properties.street + ', ':''}` + 
@@ -589,13 +607,14 @@ class MslWidget extends WP_Widget {
                                 `${e.properties.state ? e.properties.state + ', ':''}` +
                                 `${e.properties.country ? e.properties.country:''}`
                             ;
-                            // set content
+                            // set popup content and create result marker feature
                             if(xy && val && options.indexOf(val) < 0) {
                                 options.push(val);
                                 b.innerHTML = "<span>" + val + "</span>";
                                 b.innerHTML += "<input type='hidden' value='" + val + "' lonlat='" + xy + "'>";
                                 b.innerHTML += "<input type='hidden' value='" + xy + "'>";
                                 b.addEventListener("click", function(e) {
+                                    var closestFeature;
                                     /*insert the value for the autocomplete text field:*/
                                     inp.value = this.getElementsByTagName("span")[0].innerHTML
                                     inp.xy = this.getElementsByTagName("input")[1].value;
@@ -603,22 +622,78 @@ class MslWidget extends WP_Widget {
                                     center = ol.proj.fromLonLat(center);
                                     <?= $mapName ?>.getView().setCenter(center);
                                     addPoint(center, searchMarker, searchSize, <?= $mapName ?>, "search_marker");
+                                    
                                     // display nearest point
-                                    var vector = getLayerById('json-customers',  <?= $mapName ?>);
+                                    var vector = featuresToLayer(jsonFeatures, '', <?= $mapName ?>);
+                                    var source = vector ? vector.getSource() : '';
                                     if(vector) {
-                                        var source = getLayerById('json-customers', <?= $mapName ?>).getSource();
+                                        var source = vector.getSource();
                                         if(source) {
-                                            var closestFeature = source.getClosestFeatureToCoordinate(center);
-                                            displayPopup(closestFeature, <?= $mapName ?>);
-                                            vector.setVisible(true)
+                                            closestFeature = source.getClosestFeatureToCoordinate(center);
                                         }
                                     }
-                                    /*close the list of autocompleted values,
-                                    (or any other open lists of autocompleted values:*/
+
+                                    // close the list of autocompleted values
                                     closeAllLists();
+
+                                    /**
+                                     * Now we search closests features to display around serach marker result
+                                     */
+                                    if(source && maxResult) {
+                                        var closestPoints = {};
+                                        var closestDist = [];
+                                        var resultPoints = [];
+                                        var minDists;
+                                        // get all distances
+                                        source.getFeatures().forEach(e=>{
+                                            // create line
+                                            var props = e.getProperties();
+                                            var line = new ol.geom.LineString([center, e.getGeometry().getCoordinates()]);
+                                            // get line length
+                                            if(!closestDist[line.getLength()]){
+                                                closestDist.push(line.getLength());
+                                                closestPoints[line.getLength()] = [];
+                                            }
+                                            closestPoints[line.getLength()].push(e);
+                                        })
+                                        
+                                        // order list to get closests distances first
+                                        closestDist.sort(function(a, b) {
+                                            return a - b
+                                        });
+                                        minDists = closestDist.slice(0,maxResult);
+
+                                        /*  Now, parse layer features
+                                            to get features according to distance */
+                                        var p = []
+                                        minDists.forEach(dist => {
+                                            closestPoints[dist].forEach(e => {
+                                                if(p.length <= maxResult) {
+                                                    p.push(e);
+                                                }
+                                            })
+                                        })
+
+                                        // clear layer and addFeatures
+                                        vector = featuresToLayer(p, '', <?= $mapName ?>);
+                                        <?= $mapName ?>.addLayer(vector);
+
+                                        if(p.length < 2) {
+                                            // get feature from search result marker
+                                            var markerFeature = getLayerById("search_marker", <?= $mapName ?>).getSource().getFeatures()[0];
+                                            p.push(markerFeature);                                        
+                                            displayPopup(closestFeature, <?= $mapName ?>);
+                                        }
+                                        // adjust zoom and extent
+                                        zoomToFeatures(p, <?= $mapName ?>, 1);                                        
+                                    }
                                 });
                                 // append child input to result div
-                                parent.appendChild(b);            
+                                parent.appendChild(b);
+                                closestPoints = null;
+                                closestDist = null;
+                                resultPoints = null;
+                                minDists = null;
                             }
                         });
                     }
