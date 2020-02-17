@@ -706,7 +706,12 @@ class MslWidget extends WP_Widget {
                         if(value &&value.length > 3) {
                             // Ajax request
                             var xhr = new XMLHttpRequest();
-                            xhr.open('GET', 'https://photon.komoot.de/api/?limit=5&q='+ value + '&limit=5');
+                            var url = 'https://photon.komoot.de/api/?limit=5&q='+ value + '&limit=5';
+                            // Add priority from view center
+                            var center = <?= $mapName ?>.getView().getCenter();
+                            center = ol.proj.transform(center, 'EPSG:3857', 'EPSG:4326');
+                            url += `&lon=${center[0]}&lat=${center[1]}`;
+                            xhr.open('GET', url);
                             xhr.onload = function() {
                                 if (xhr.status === 200 && xhr.responseText) {
                                     var response = xhr.responseText.length ? JSON.parse(xhr.responseText) : null;
