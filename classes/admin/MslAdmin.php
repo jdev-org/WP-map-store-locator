@@ -360,7 +360,7 @@ class MslAdmin
     }
     function msl_marker_search_bias() {
         ?>
-            <input type="number"step="0.01 name="msl_marker_search_bias" id="msl_marker_search_bias" value="<?php echo get_option('msl_marker_search_bias'); ?>" />
+            <input type="number"step="0.01" name="msl_marker_search_bias" id="msl_marker_search_bias" value="<?php echo get_option('msl_marker_search_bias'); ?>" />
         <?php
     }    
 }
