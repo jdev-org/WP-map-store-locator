@@ -70,8 +70,7 @@ class MslWidget extends WP_Widget {
         wp_enqueue_script('ol_js', MSL_PLUGIN_URL."includes/lib/ol-6.1.1/js/ol.js", null, '6.1.1' );
         wp_enqueue_style( 'ol_css', MSL_PLUGIN_URL."includes/lib/ol-6.1.1/css/ol.css" );
         // use !important to override child theme css
-        wp_enqueue_style( 'msl', MSL_PLUGIN_URL."includes/css/msl.css" );
-        
+        wp_enqueue_style( 'msl', MSL_PLUGIN_URL."includes/css/msl.css" );        
     }
 
     /**
@@ -172,7 +171,7 @@ class MslWidget extends WP_Widget {
         ?>
             <!--Search input with autocompletion-->
             <div class="autocomplete">
-                <input class="input-search input-text" id=<?= $inputId ?> type="text" name="nominatim" placeholder=" <?= __('Enter your adresse to get  the nearest sale point', 'WP-map-store-locator');?>">
+                <input class="input-search input-text" id=<?= $inputId ?> type="text" name="photon" placeholder=" <?= __('Enter your adresse to get  the nearest sale point', 'WP-map-store-locator');?>">
             </div>
             <!--OpenLayers map div-->
             <div id=<?= $mapName ?>
@@ -204,7 +203,7 @@ class MslWidget extends WP_Widget {
             var overlayTitle = <?= json_encode(get_option('msl_overlay_title'));?> || '';
             var overlayHtmlContent = <?= json_encode(get_option('msl_overlay_html'));?> || '';
             var dataUrl = <?= json_encode(get_option('msl_data_file_url'));?> || '';
-            var dataSize = <?= json_encode(get_option('msl_data_size'));?> || '';
+            var dataSize = <?= json_encode(get_option('msl_data_size'));?> || 0.8;
             var openPageUrl = <?= json_encode(get_option('msl_open_page'));?> || '';
             var img = [
                 <?= json_encode(get_option('msl_data_png1_url'));?>,
@@ -215,7 +214,12 @@ class MslWidget extends WP_Widget {
                 <?= json_encode(get_option('msl_data_png2_type'));?>,
                 <?= json_encode(get_option('msl_data_png3_type'));?>];
             var searchMarker = <?= json_encode(get_option('msl_marker_search_url'));?> || '';
-            var searchSize = <?= json_encode(get_option('msl_marker_search_size'));?> || '';            
+            var searchSize = <?= json_encode(get_option('msl_marker_search_size'));?> || 1;
+            var maxResult = <?= json_encode(get_option('msl_marker_search_extent'));?> || 1;
+            var biasScale = <?= json_encode(get_option('msl_marker_search_bias'));?> || 1.5;
+            var popupIdx = 0;
+            var selectedFeatures = [];
+            var jsonFeatures;
 
             /**
             * Convert string coordinates to real array
@@ -270,8 +274,8 @@ class MslWidget extends WP_Widget {
                 var iconFeature = new ol.Feature({
                     geometry: new ol.geom.Point(xy),
                     id: id
-                });
-                if (marker ) { // avoid empty style and no ol.style.icon assertion error
+                });                
+                if (marker) { // avoid empty style and no ol.style.icon assertion error
                     // create style
                     var iconStyle = new ol.style.Style({
                         image: new ol.style.Icon({
@@ -284,10 +288,13 @@ class MslWidget extends WP_Widget {
                     });
                     // set style
                     iconFeature.setStyle(iconStyle);
-                    // remove layer if already exist
-                    if(getLayerById(id, mapName)) {
-                        mapName.removeLayer(id);
-                    }
+                }                
+                // remove layer if already exist
+                if(getLayerById(id, mapName)) {
+                    var searchLayer = getLayerById(id, mapName);
+                    searchLayer.getSource().clear();
+                    searchLayer.getSource().addFeature(iconFeature);
+                } else {
                     // create layer with uniq id
                     var layer = new ol.layer.Vector({
                         source: new ol.source.Vector({
@@ -298,7 +305,7 @@ class MslWidget extends WP_Widget {
                         id: id
                     });
                     // add marker to map
-                    mapName.addLayer(layer);
+                    mapName.addLayer(layer);                    
                 }
             }
             
@@ -320,7 +327,6 @@ class MslWidget extends WP_Widget {
                 });
                 return find;
             }
-
             /**
              * Remove overlays from given map
              * @param map - ol.map
@@ -329,18 +335,41 @@ class MslWidget extends WP_Widget {
                 if(map.getOverlays().getArray().length) {
                     map.getOverlays().getArray()[0].setPosition(undefined);
                     map.getOverlays().getArray().splice(0, map.getOverlays().getArray().length);
+                    jQuery('#'+ 'popup-content-' + map.get('target')).empty();
                 }
             }
+            /**
+             * Manage events for fopup arrows buttons
+             * @param features - array of features
+             * @param map - ol.Map for this map
+             */
+             function navigPopup(features, map) {
+                var maxIdx = features.length-1;
+                var idx;
+                // only for more than one features - display buttons
+                if(maxIdx > 0 & popupIdx != undefined) {
+                    document.getElementById('nextPopup').addEventListener('click', function(){
+                        idx = popupIdx === maxIdx ? 0 : popupIdx + 1;
+                        displayPopup(features, map, idx);
+                    });
+                    document.getElementById('previousPopup').addEventListener('click', function(){
+                        idx = popupIdx === 0 ? maxIdx : popupIdx - 1;
+                        displayPopup(features, map, idx);
+                    });
+                }
+             }
             /**
             * Function to generate the full process to destroy, create and set map overlay.
             * This avoid wrong popup behavior and map id's conflict when popup is display into a bad map.
             * @param feature - ol.feature object to get id. This id was set by addPoint function.
             * @param map - target this ol.map object to display popup.
             */
-            function displayPopup(feature, map) {
+            function displayPopup(features, map, idx) {
+                popupIdx = idx;
+                var feature = features[idx];
                 var html = "";
                 var contactMsg = "<?php echo __('Please, contact ', 'WP-map-store-locator')?>" + overlayTitle + "<?php echo __(' to get more details.', 'WP-map-store-locator')?>";
-                if(feature.id_ === 'search_marker') {
+                if(feature.id_ != undefined && feature.id_ === 'search_marker') {
                     // never display popup on search marker without properties.
                     // avoid to display "undefined" values into popup.
                     return;
@@ -361,7 +390,8 @@ class MslWidget extends WP_Widget {
                 // display popup initially hidden
                 jQuery('#'+ 'popup-' + map.get('target')).css('display','inline-block');
                 // add content html
-                if(feature.getProperties().id === 'home-feature') {
+                var props = feature.getProperties();
+                if(props.id === 'home-feature') {
                     // display some content if marker is the owner or default retailer marker
                     if(overlayHtmlContent.length > 0) {
                         html = overlayHtmlContent;
@@ -370,12 +400,22 @@ class MslWidget extends WP_Widget {
                         html += '</br>'+ overlayText;
                     }
                 } else {
-                    // else it's a json data feature, we display specific properties.
+                    // it's a json data feature, we display specific properties.
                     try {
-                        var f = feature.getProperties();
-                        html = '<strong>'+ f.nom + '</strong>';
-                        html += '</br>'+ f.adresse + ', ' + f.code_postal + ', ' + f.ville;
-                        document.getElementById('popup-content-' + map.get('target')).innerHTML = html;
+                        if(!props.name) {
+                            html = '<strong>'+ props.nom + '</strong>';
+                            html += '</br>'+ props.adresse + ', ' + props.code_postal + ', ' + props.ville;
+                        } else {
+                            html = '<span>'+ props.name + '</span>';
+                        }
+                        if(features.length > 1) {
+                            var lenFeatures = features.length;
+                            html += `<br/><span style="text-align:center;">`;
+                            html += `<button style="display:inline-block;" id="previousPopup" class="btn popupBtn"><</button>`;
+                            html += popupIdx+1 + '/' + lenFeatures;
+                            html += `<button id="nextPopup" style="display:inline-block;" class="btn popupBtn">></button></span>`;
+                        }
+                        document.getElementById('popup-content-' + map.get('target')).innerHTML = html;                                              
                     } catch (e) {
                         // display contact message
                         html = contactMsg;
@@ -388,6 +428,10 @@ class MslWidget extends WP_Widget {
                     html = contactMsg;
                 }
                 document.getElementById('popup-content-' + map.get('target')).innerHTML = html;
+                
+                // events for popup navigation buttons
+                navigPopup(features, map);
+                selectedFeatures = features;
             }
             
             /**
@@ -409,7 +453,7 @@ class MslWidget extends WP_Widget {
                     });
                     if(features.length) {
                         // display popup for the first popup only
-                        displayPopup(features[0], <?= $mapName ?>);
+                        displayPopup(features, <?= $mapName ?>, 0);
                     } else {
                         // hide popup if no features was find. Allow to hide popup on simple map click.
                         if(<?= $mapName ?>.getOverlays().getArray().length) {
@@ -454,9 +498,7 @@ class MslWidget extends WP_Widget {
                                 } else {
                                     features = res;
                                 }
-                                layerCustomers = featuresToLayer(features, layerId);
-                                layerCustomers.setVisible(false);
-                                map.addLayer(layerCustomers);
+                                jsonFeatures = features;
                             }
                         }
                         else {
@@ -473,7 +515,12 @@ class MslWidget extends WP_Widget {
                  * @param id - string as uniq id.
                  * @return ol.layer.vector object.
                  */
-                function featuresToLayer(features, id) {
+                function featuresToLayer(features, id, map) {
+                    // remove layer if already exist
+                    if(getLayerById(id,map)) {
+                        map.removeLayer(getLayerById(id,map));
+                    }
+                    // crate layer and add features
                     let vectorSource = new ol.source.Vector({
                         features
                     });
@@ -493,7 +540,9 @@ class MslWidget extends WP_Widget {
                 function getStyle(feature) {
                     var style;
                     var cat = feature.get('code_categorie');
-                    
+                    if(!cat && feature.get('styleUrl') && feature.get('styleUrl').indexOf('icon') >= 0) { // from kml
+                        cat = feature.get('styleUrl').indexOf('icon-1502') < 0 ? 'CHR' : 'DET';
+                    }
                     if(types.indexOf(cat) > -1 && cat.length === types.length){
                         var imgCat = img[types.indexOf(cat)];
                         style = new ol.style.Style({
@@ -505,6 +554,22 @@ class MslWidget extends WP_Widget {
                     }
                     return [style];
                 }
+
+                /**
+                * From features, calculate and zoom in
+                * allow a param to adjust zoom out
+                * @param - Array of ol.feature object
+                * @param - map ol.map targeted
+                * @param - int our float number
+                */
+                function zoomToFeatures(features, map, out) {
+                    var extent = (new ol.source.Vector({
+                        features: features
+                    })).getExtent();
+                    map.getView().fit(extent, map.getSize());
+                    var zoom = map.getView().getZoom();
+                    map.getView().setZoom(zoom-(out ? out : 0));
+                }  
 
                 /**
                 * Create autocompletion behavior and HTML UI.
@@ -567,36 +632,23 @@ class MslWidget extends WP_Widget {
                     function displayList(results, parent) {
                         var b;
                         var options = [];
+
                         // parse results
                         results.forEach(e => {
+
                             // create div for each
                             b = document.createElement("DIV");
-                            var xy =  e.lon + ',' + e.lat;
-                            var val = '';
-                            var place = e.address;
+                            var xy =  e.geometry.coordinates[0] + ',' + e.geometry.coordinates[1];
                             var add = [];
-                            function addToArray(el) {
-                                if(add.indexOf(el) < 0) {
-                                    add.push(el);
-                                }
-                            }
+
                             // create string content according to nominatim returns
-                            if( (place.county  || place.city  || place.village) && place.country) {
-                                if(place.road) {
-                                    addToArray(place.road);
-                                } else if (place.address29) {
-                                    addToArray(place.address29)
-                                };
-                                if(place.village) {addToArray(place.village)};
-                                if(place.city) {addToArray(place.city)};
-                                if(place.county)  {addToArray(place.county)};
-                                if(place.postcode) {add.push(place.postcode)};
-                                if(place.country_code) {add.push(place.country_code)};
-                            } else if (place.country && place.state){
-                                val = place.state + ', ' + place.country; 
-                            }
-                            val = add.join(', ');
-                            // set content
+                            var val = 
+                                `${e.properties.street ? e.properties.street + ', ': e.properties.name + ', '}` + 
+                                `${e.properties.city ? e.properties.city + ', ': ''}` +
+                                `${e.properties.state ? e.properties.state + ', ':''}` +
+                                `${e.properties.country ? e.properties.country:''}`
+                            ;
+                            // set popup content and create result marker feature
                             if(xy && val && options.indexOf(val) < 0) {
                                 options.push(val);
                                 b.innerHTML = "<span>" + val + "</span>";
@@ -610,22 +662,80 @@ class MslWidget extends WP_Widget {
                                     center = ol.proj.fromLonLat(center);
                                     <?= $mapName ?>.getView().setCenter(center);
                                     addPoint(center, searchMarker, searchSize, <?= $mapName ?>, "search_marker");
+                                    
                                     // display nearest point
-                                    var vector = getLayerById('json-customers',  <?= $mapName ?>);
-                                    if(vector) {
-                                        var source = getLayerById('json-customers', <?= $mapName ?>).getSource();
-                                        if(source) {
-                                            var closestFeature = source.getClosestFeatureToCoordinate(center);
-                                            displayPopup(closestFeature, <?= $mapName ?>);
-                                            vector.setVisible(true)
-                                        }
-                                    }
-                                    /*close the list of autocompleted values,
-                                    (or any other open lists of autocompleted values:*/
+                                    var vector = featuresToLayer(jsonFeatures, '', <?= $mapName ?>);
+                                    var source = vector ? vector.getSource() : '';
+
+                                    // close the list of autocompleted values
                                     closeAllLists();
+
+                                    /**
+                                     * Now we search closests features to display around search marker result
+                                     */
+                                    if(source && maxResult) {
+                                        var closestPoints = {};
+                                        var closestDist = [];
+                                        var resultPoints = [];
+                                        var minDists;
+                                        // get all distances
+                                        source.getFeatures().forEach(e=>{
+                                            // create line
+                                            var props = e.getProperties();
+                                            var line = new ol.geom.LineString([center, e.getGeometry().getCoordinates()]);
+                                            // get line length
+                                            var lineMeasure = line.getLength();
+                                            if(closestDist.indexOf(lineMeasure)<0){
+                                                closestDist.push(lineMeasure);
+                                                closestPoints[lineMeasure.toString()] = [];
+                                            }
+                                            closestPoints[lineMeasure.toString()].push(e);
+                                        })
+                                        
+                                        // order list to get closests distances first
+                                        closestDist.sort(function(a, b) {
+                                            return a - b
+                                        });
+                                        minDists = closestDist.slice(0,maxResult);
+
+                                        /*  Now, parse layer features
+                                            to get features according to distance */
+                                        var extentPoint = []
+                                        var popupPoints = [];
+                                        minDists.forEach(dist => {
+                                            closestPoints[dist].forEach(e => {
+                                                if(extentPoint.length < maxResult) {
+                                                    extentPoint.push(e);
+                                                    if(!popupPoints.length) {
+                                                        popupPoints.push(e);
+                                                    } else {
+                                                        var nearestGeom = e.getGeometry().getCoordinates().join('');
+                                                        var compareGeom = popupPoints[0].getGeometry().getCoordinates().join('');
+                                                        if(nearestGeom === compareGeom) {
+                                                            popupPoints.push(e);
+                                                        }
+                                                    }
+                                                }
+                                            })
+                                        })
+
+                                        // clear layer and addFeatures
+                                        vector = featuresToLayer(extentPoint, '', <?= $mapName ?>);
+                                        <?= $mapName ?>.addLayer(vector);
+                                        // show popup
+                                        displayPopup(popupPoints, <?= $mapName ?>, 0);
+                                        // show result marker
+                                        var markerFeature = getLayerById("search_marker", <?= $mapName ?>).getSource().getFeatures()[0];                                      
+                                        // adjust zoom and extent
+                                        zoomToFeatures(extentPoint.concat([markerFeature]), <?= $mapName ?>, 1);                                        
+                                    }
                                 });
                                 // append child input to result div
-                                parent.appendChild(b);            
+                                parent.appendChild(b);
+                                closestPoints = null;
+                                closestDist = null;
+                                resultPoints = null;
+                                minDists = null;
                             }
                         });
                     }
@@ -639,12 +749,18 @@ class MslWidget extends WP_Widget {
                         if(value &&value.length > 3) {
                             // Ajax request
                             var xhr = new XMLHttpRequest();
-                            xhr.open('GET', 'https://nominatim.openstreetmap.org/search?q='+ value + '&format=json&addressdetails=1&limit=5');
+                            var url = 'https://photon.komoot.de/api/?limit=5&q='+ value + '&limit=5';
+                            url += '&location_bias_scale=' + biasScale;
+                            // Add priority from view center
+                            var center = <?= $mapName ?>.getView().getCenter();
+                            center = ol.proj.transform(center, 'EPSG:3857', 'EPSG:4326');
+                            url += `&lon=${center[0]}&lat=${center[1]}`;
+                            xhr.open('GET', url);
                             xhr.onload = function() {
                                 if (xhr.status === 200 && xhr.responseText) {
                                     var response = xhr.responseText.length ? JSON.parse(xhr.responseText) : null;
                                     if(response) {
-                                        displayList(response, parent);
+                                        displayList(response.features, parent);
                                     }
                                 }
                                 else {
