@@ -216,6 +216,7 @@ class MslWidget extends WP_Widget {
             var searchMarker = <?= json_encode(get_option('msl_marker_search_url'));?> || '';
             var searchSize = <?= json_encode(get_option('msl_marker_search_size'));?> || 1;
             var maxResult = <?= json_encode(get_option('msl_marker_search_extent'));?> || 1;
+            var biasScale = <?= json_encode(get_option('msl_marker_search_bias'));?> || 1.5;
             var popupIdx = 0;
             var selectedFeatures = [];
             var jsonFeatures;
@@ -740,7 +741,8 @@ class MslWidget extends WP_Widget {
                         if(value &&value.length > 3) {
                             // Ajax request
                             var xhr = new XMLHttpRequest();
-                            var url = 'https://photon.komoot.de/api/?limit=5&q='+ value + '&limit=5&location_bias_scale=2';
+                            var url = 'https://photon.komoot.de/api/?limit=5&q='+ value + '&limit=5';
+                            url += '&location_bias_scale=' + biasScale;
                             // Add priority from view center
                             var center = <?= $mapName ?>.getView().getCenter();
                             center = ol.proj.transform(center, 'EPSG:3857', 'EPSG:4326');
