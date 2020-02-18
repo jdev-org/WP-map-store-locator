@@ -320,6 +320,9 @@ class MslAdmin
         // max point(s) to adjust result extent
         add_settings_field("msl_marker_search_extent", __( "Max results", 'WP-map-store-locator' ), array($this,"msl_marker_search_extent"), "msl_plugin", "search_section");
         register_setting("msl_settings", "msl_marker_search_extent");
+        // bias param to adjust accuracy of result (0.1 accept far results and 10 not)
+        add_settings_field("msl_marker_search_bias", __( "Bias scale (0,1-10)", 'WP-map-store-locator' ), array($this,"msl_marker_search_bias"), "msl_plugin", "search_section");
+        register_setting("msl_settings", "msl_marker_search_bias");        
     }    
 
     // section description text
@@ -353,6 +356,11 @@ class MslAdmin
     function msl_marker_search_extent() {
         ?>
             <input type="number" step="1" name="msl_marker_search_extent" id="msl_marker_search_extent" value="<?php echo get_option('msl_marker_search_extent'); ?>" />
+        <?php
+    }
+    function msl_marker_search_bias() {
+        ?>
+            <input type="number" step="1" name="msl_marker_search_bias" id="msl_marker_search_bias" value="<?php echo get_option('msl_marker_search_bias'); ?>" />
         <?php
     }    
 }

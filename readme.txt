@@ -2,7 +2,7 @@
 Contributors: jdevsig
 Donate link: https://jdev.fr/
 Tags: map, OpenStreetMap, CSV, GeoJson, geotag, geolocation, OSM, OpenLayers, Open Layers, Open Street Map,POI, geocode, geotagging, location, store, retaillers, jdev
-Requires at least: 5.0
+Requires at least: 4.9
 Tested up to: 5.3.2
 Stable tag: trunk
 Requires PHP: 5.2.4
@@ -59,3 +59,14 @@ Fix widget position
 Fix search input width
 Fix shortcode param
 Fix translation path
+
+= 1.2.0 =
+Fix input search width
+Insert arrows to change the popup target for many feature at the same coordinates
+Display popup at nearest(s) point(s)
+Complete translation
+Change Nominatim to Photon address API
+Fix style for KML layer
+Fix some default params values
+Add param to config the result numbers
+Zoom to results address extent
