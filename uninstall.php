@@ -27,6 +27,8 @@ delete_option('msl_default_zoom');
 delete_option('msl_open_page');
 delete_option('msl_marker_search_url');
 delete_option('msl_marker_search_size');
+delete_option('msl_marker_search_extent');
+delete_option('msl_marker_search_bias');
 delete_option('msl_overlay_html');
 delete_option('msl_overlay_marker');
 delete_option('msl_overlay_marker_size');
