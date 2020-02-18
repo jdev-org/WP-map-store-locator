@@ -70,8 +70,7 @@ class MslWidget extends WP_Widget {
         wp_enqueue_script('ol_js', MSL_PLUGIN_URL."includes/lib/ol-6.1.1/js/ol.js", null, '6.1.1' );
         wp_enqueue_style( 'ol_css', MSL_PLUGIN_URL."includes/lib/ol-6.1.1/css/ol.css" );
         // use !important to override child theme css
-        wp_enqueue_style( 'msl', MSL_PLUGIN_URL."includes/css/msl.css" );
-        
+        wp_enqueue_style( 'msl', MSL_PLUGIN_URL."includes/css/msl.css" );        
     }
 
     /**
@@ -217,6 +216,8 @@ class MslWidget extends WP_Widget {
             var searchMarker = <?= json_encode(get_option('msl_marker_search_url'));?> || '';
             var searchSize = <?= json_encode(get_option('msl_marker_search_size'));?> || 1;
             var maxResult = <?= json_encode(get_option('msl_marker_search_extent'));?> || 1;
+            var popupIdx = 0;
+            var selectedFeatures = [];
             var jsonFeatures;
 
             /**
@@ -325,7 +326,6 @@ class MslWidget extends WP_Widget {
                 });
                 return find;
             }
-
             /**
              * Remove overlays from given map
              * @param map - ol.map
@@ -334,18 +334,41 @@ class MslWidget extends WP_Widget {
                 if(map.getOverlays().getArray().length) {
                     map.getOverlays().getArray()[0].setPosition(undefined);
                     map.getOverlays().getArray().splice(0, map.getOverlays().getArray().length);
+                    jQuery('#'+ 'popup-content-' + map.get('target')).empty();
                 }
             }
+            /**
+             * Manage events for fopup arrows buttons
+             * @param features - array of features
+             * @param map - ol.Map for this map
+             */
+             function navigPopup(features, map) {
+                var maxIdx = features.length-1;
+                var idx;
+                // only for more than one features - display buttons
+                if(maxIdx > 0 & popupIdx != undefined) {
+                    document.getElementById('next').addEventListener('click', function(){
+                        idx = popupIdx === maxIdx ? 0 : popupIdx + 1;
+                        displayPopup(features, map, idx);
+                    });
+                    document.getElementById('previous').addEventListener('click', function(){
+                        idx = popupIdx === 0 ? maxIdx : popupIdx - 1;
+                        displayPopup(features, map, idx);
+                    });
+                }
+             }
             /**
             * Function to generate the full process to destroy, create and set map overlay.
             * This avoid wrong popup behavior and map id's conflict when popup is display into a bad map.
             * @param feature - ol.feature object to get id. This id was set by addPoint function.
             * @param map - target this ol.map object to display popup.
             */
-            function displayPopup(feature, map) {
+            function displayPopup(features, map, idx) {
+                popupIdx = idx;
+                var feature = features[idx];
                 var html = "";
                 var contactMsg = "<?php echo __('Please, contact ', 'WP-map-store-locator')?>" + overlayTitle + "<?php echo __(' to get more details.', 'WP-map-store-locator')?>";
-                if(feature.id_ === 'search_marker') {
+                if(feature.id_ != undefined && feature.id_ === 'search_marker') {
                     // never display popup on search marker without properties.
                     // avoid to display "undefined" values into popup.
                     return;
@@ -376,7 +399,7 @@ class MslWidget extends WP_Widget {
                         html += '</br>'+ overlayText;
                     }
                 } else {
-                    // else it's a json data feature, we display specific properties.
+                    // it's a json data feature, we display specific properties.
                     try {
                         if(!props.name) {
                             html = '<strong>'+ props.nom + '</strong>';
@@ -384,7 +407,14 @@ class MslWidget extends WP_Widget {
                         } else {
                             html = '<span>'+ props.name + '</span>';
                         }
-                        document.getElementById('popup-content-' + map.get('target')).innerHTML = html;                        
+                        if(features.length > 1) {
+                            var lenFeatures = features.length;
+                            html += `<br/><span style="text-align:center;">`;
+                            html += `<button style="display:inline-block;" id="previous" class="btn popupBtn"><</button>`;
+                            html += popupIdx+1 + '/' + lenFeatures;
+                            html += `<button id="next" style="display:inline-block;" class="btn popupBtn">></button></span>`;
+                        }
+                        document.getElementById('popup-content-' + map.get('target')).innerHTML = html;                                              
                     } catch (e) {
                         // display contact message
                         html = contactMsg;
@@ -397,6 +427,10 @@ class MslWidget extends WP_Widget {
                     html = contactMsg;
                 }
                 document.getElementById('popup-content-' + map.get('target')).innerHTML = html;
+                
+                // events for popup navigation buttons
+                navigPopup(features, map);
+                selectedFeatures = features;
             }
             
             /**
@@ -418,7 +452,7 @@ class MslWidget extends WP_Widget {
                     });
                     if(features.length) {
                         // display popup for the first popup only
-                        displayPopup(features[0], <?= $mapName ?>);
+                        displayPopup(features, <?= $mapName ?>, 0);
                     } else {
                         // hide popup if no features was find. Allow to hide popup on simple map click.
                         if(<?= $mapName ?>.getOverlays().getArray().length) {
@@ -636,7 +670,7 @@ class MslWidget extends WP_Widget {
                                     closeAllLists();
 
                                     /**
-                                     * Now we search closests features to display around serach marker result
+                                     * Now we search closests features to display around search marker result
                                      */
                                     if(source && maxResult) {
                                         var closestPoints = {};
@@ -676,15 +710,15 @@ class MslWidget extends WP_Widget {
 
                                         // clear layer and addFeatures
                                         vector = featuresToLayer(p, '', <?= $mapName ?>);
-                                        <?= $mapName ?>.addLayer(vector);                                    
-                                        // show result popup if only on first feature
-                                        displayPopup(p[0], <?= $mapName ?>);
+                                        <?= $mapName ?>.addLayer(vector);
+                                        if(p.length === 1) {
+                                            displayPopup(p, <?= $mapName ?>, 0);
+                                        }
                                         
                                         // show result marker
-                                        var markerFeature = getLayerById("search_marker", <?= $mapName ?>).getSource().getFeatures()[0];
-                                        p.push(markerFeature);                                        
+                                        var markerFeature = getLayerById("search_marker", <?= $mapName ?>).getSource().getFeatures()[0];                                      
                                         // adjust zoom and extent
-                                        zoomToFeatures(p, <?= $mapName ?>, 1);                                        
+                                        zoomToFeatures(p.concat([markerFeature]), <?= $mapName ?>, 1);                                        
                                     }
                                 });
                                 // append child input to result div
