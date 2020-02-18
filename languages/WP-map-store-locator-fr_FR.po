@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WP-map-store-locator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-14 08:21+0000\n"
-"PO-Revision-Date: 2020-02-14 08:21+0000\n"
+"POT-Creation-Date: 2020-02-18 08:31+0000\n"
+"PO-Revision-Date: 2020-02-18 08:31+0000\n"
 "Last-Translator: wordpress <gaetan.bruel@jdev.fr>\n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
@@ -120,7 +120,7 @@ msgstr "Options par défaut d'affichage des données sur la carte"
 msgid "Display data with projection "
 msgstr "Vous devez afficher les données dans la projection "
 
-#: classes/admin/MslAdmin.php:225 classes/admin/MslAdmin.php:332
+#: classes/admin/MslAdmin.php:225 classes/admin/MslAdmin.php:335
 msgid "Please, use SVG or PNG as icons."
 msgstr ""
 "Merci d'utiliser des liens vers les formats SVG et PNG pour les symboles."
@@ -129,7 +129,7 @@ msgstr ""
 msgid "Check the template file."
 msgstr "Fichier d'exemple à respecter."
 
-#: classes/admin/MslAdmin.php:313 classes/admin/MslAdmin.php:329
+#: classes/admin/MslAdmin.php:313 classes/admin/MslAdmin.php:332
 msgid "Search options"
 msgstr "Options de la barre de recherche"
 
@@ -141,6 +141,10 @@ msgstr "URL de l'icône"
 msgid "Max results"
 msgstr "Nombre de résultats"
 
+#: classes/admin/MslAdmin.php:324
+msgid "Bias scale (0,1-10)"
+msgstr "Echelle de proximité (0.1-10)"
+
 #. Description of the plugin
 #: classes/widgets/MslWidget.php:22 classes/widgets/MslWidgetSave.php:22
 msgid "A plugin to display geographic data in a map."
@@ -148,35 +152,35 @@ msgstr ""
 "Une extension open source pour afficher vos données géographiques sur une "
 "carte."
 
-#: classes/widgets/MslWidget.php:115 classes/widgets/MslWidgetSave.php:117
+#: classes/widgets/MslWidget.php:116 classes/widgets/MslWidgetSave.php:117
 msgid "Simple map"
 msgstr "Carte simple"
 
-#: classes/widgets/MslWidget.php:119 classes/widgets/MslWidgetSave.php:121
+#: classes/widgets/MslWidget.php:120 classes/widgets/MslWidgetSave.php:121
 msgid "Height (px, em, %)"
 msgstr "Hauteur (px, em, %)"
 
-#: classes/widgets/MslWidget.php:120 classes/widgets/MslWidgetSave.php:122
+#: classes/widgets/MslWidget.php:121 classes/widgets/MslWidgetSave.php:122
 msgid "Height"
 msgstr "Hauteur"
 
-#: classes/widgets/MslWidget.php:124 classes/widgets/MslWidgetSave.php:126
+#: classes/widgets/MslWidget.php:125 classes/widgets/MslWidgetSave.php:126
 msgid "Width (px, em, %)"
 msgstr "Largeur (px, em, %)"
 
-#: classes/widgets/MslWidget.php:125 classes/widgets/MslWidgetSave.php:127
+#: classes/widgets/MslWidget.php:126 classes/widgets/MslWidgetSave.php:127
 msgid "Width"
 msgstr "Largeur"
 
-#: classes/widgets/MslWidget.php:175 classes/widgets/MslWidgetSave.php:175
+#: classes/widgets/MslWidget.php:174 classes/widgets/MslWidgetSave.php:175
 msgid "Enter your adresse to get  the nearest sale point"
 msgstr "Entrer votre adresse pour trouver les points de ventes "
 
-#: classes/widgets/MslWidget.php:344 classes/widgets/MslWidgetSave.php:342
+#: classes/widgets/MslWidget.php:371 classes/widgets/MslWidgetSave.php:342
 msgid "Please, contact "
 msgstr "Merci de contacter "
 
-#: classes/widgets/MslWidget.php:344 classes/widgets/MslWidgetSave.php:342
+#: classes/widgets/MslWidget.php:371 classes/widgets/MslWidgetSave.php:342
 msgid " to get more details."
 msgstr " pour obtenir plus d'informations."
 
