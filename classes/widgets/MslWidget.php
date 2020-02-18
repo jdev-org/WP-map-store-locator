@@ -700,26 +700,34 @@ class MslWidget extends WP_Widget {
 
                                         /*  Now, parse layer features
                                             to get features according to distance */
-                                        var p = []
+                                        var extentPoint = []
+                                        var popupPoints = [];
                                         minDists.forEach(dist => {
                                             closestPoints[dist].forEach(e => {
-                                                if(p.length < maxResult) {
-                                                    p.push(e);
+                                                if(extentPoint.length < maxResult) {
+                                                    extentPoint.push(e);
+                                                    if(!popupPoints.length) {
+                                                        popupPoints.push(e);
+                                                    } else {
+                                                        var nearestGeom = e.getGeometry().getCoordinates().join('');
+                                                        var compareGeom = popupPoints[0].getGeometry().getCoordinates().join('');
+                                                        if(nearestGeom === compareGeom) {
+                                                            popupPoints.push(e);
+                                                        }
+                                                    }
                                                 }
                                             })
                                         })
 
                                         // clear layer and addFeatures
-                                        vector = featuresToLayer(p, '', <?= $mapName ?>);
+                                        vector = featuresToLayer(extentPoint, '', <?= $mapName ?>);
                                         <?= $mapName ?>.addLayer(vector);
-                                        if(p.length === 1) {
-                                            displayPopup(p, <?= $mapName ?>, 0);
-                                        }
-                                        
+                                        // show popup
+                                        displayPopup(popupPoints, <?= $mapName ?>, 0);
                                         // show result marker
                                         var markerFeature = getLayerById("search_marker", <?= $mapName ?>).getSource().getFeatures()[0];                                      
                                         // adjust zoom and extent
-                                        zoomToFeatures(p.concat([markerFeature]), <?= $mapName ?>, 1);                                        
+                                        zoomToFeatures(extentPoint.concat([markerFeature]), <?= $mapName ?>, 1);                                        
                                     }
                                 });
                                 // append child input to result div
