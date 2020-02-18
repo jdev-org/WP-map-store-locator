@@ -348,11 +348,11 @@ class MslWidget extends WP_Widget {
                 var idx;
                 // only for more than one features - display buttons
                 if(maxIdx > 0 & popupIdx != undefined) {
-                    document.getElementById('next').addEventListener('click', function(){
+                    document.getElementById('nextPopup').addEventListener('click', function(){
                         idx = popupIdx === maxIdx ? 0 : popupIdx + 1;
                         displayPopup(features, map, idx);
                     });
-                    document.getElementById('previous').addEventListener('click', function(){
+                    document.getElementById('previousPopup').addEventListener('click', function(){
                         idx = popupIdx === 0 ? maxIdx : popupIdx - 1;
                         displayPopup(features, map, idx);
                     });
@@ -411,9 +411,9 @@ class MslWidget extends WP_Widget {
                         if(features.length > 1) {
                             var lenFeatures = features.length;
                             html += `<br/><span style="text-align:center;">`;
-                            html += `<button style="display:inline-block;" id="previous" class="btn popupBtn"><</button>`;
+                            html += `<button style="display:inline-block;" id="previousPopup" class="btn popupBtn"><</button>`;
                             html += popupIdx+1 + '/' + lenFeatures;
-                            html += `<button id="next" style="display:inline-block;" class="btn popupBtn">></button></span>`;
+                            html += `<button id="nextPopup" style="display:inline-block;" class="btn popupBtn">></button></span>`;
                         }
                         document.getElementById('popup-content-' + map.get('target')).innerHTML = html;                                              
                     } catch (e) {
