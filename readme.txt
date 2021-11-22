@@ -70,3 +70,7 @@ Fix style for KML layer
 Fix some default params values
 Add param to config the result numbers
 Zoom to results address extent
+
+= 1.2.1 =
+Fix Photon URL
+Insert wiki img
