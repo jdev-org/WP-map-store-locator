@@ -749,7 +749,7 @@ class MslWidget extends WP_Widget {
                         if(value &&value.length > 3) {
                             // Ajax request
                             var xhr = new XMLHttpRequest();
-                            var url = 'https://photon.komoot.de/api/?limit=5&q='+ value + '&limit=5';
+                            var url = 'https://photon.komoot.io/api/?limit=5&q='+ value + '&limit=5';
                             url += '&location_bias_scale=' + biasScale;
                             // Add priority from view center
                             var center = <?= $mapName ?>.getView().getCenter();
