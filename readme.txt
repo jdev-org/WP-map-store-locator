@@ -3,7 +3,7 @@ Contributors: jdevsig
 Donate link: https://jdev.fr/
 Tags: map, OpenStreetMap, CSV, GeoJson, geotag, geolocation, OSM, OpenLayers, Open Layers, Open Street Map,POI, geocode, geotagging, location, store, retaillers, jdev
 Requires at least: 4.9
-Tested up to: 5.3.2
+Tested up to: 5.8.2
 Stable tag: trunk
 Requires PHP: 5.2.4
 License: GPLv2 or later
